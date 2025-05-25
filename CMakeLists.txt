@@ -6,8 +6,15 @@ project(${project_name})
 
 add_executable(${project_name}
 	src/main.cpp
+
 	src/shader/shader.cpp
 	src/shader/program.cpp
+
+	src/gl_objects/vao.cpp
+	src/gl_objects/vao_e.cpp
+
+	src/gl_objects/buffers/vbo.cpp
+	src/gl_objects/buffers/ebo.cpp
 )
 
 add_subdirectory(libs/glfw)

@@ -7,6 +7,12 @@
 #include "shader/shader.h"
 #include "shader/program.h"
 
+#include "gl_objects/vao_e.h"
+#include "gl_objects/vao.h"
+
+#include "gl_objects/buffers/vbo.h"
+#include "gl_objects/buffers/ebo.h"
+
 using namespace std;
 
 int main() {
@@ -41,6 +47,65 @@ int main() {
     Program program(shaders);
 
     cout << "PROGRAM: " << program.getProgram() << endl;
+
+/*
+    vector<float> vertices = {
+	1, 0, 2,
+	3, 2, 1,
+	2, 4, 4,
+	8, -1, 1
+    };
+
+    VBO vbo(vertices, 3);
+
+    vector<int> ind = {
+	1, 2, 3,
+	1, 3, 4,
+	2, 4, 1,
+	3, 1, 2
+    };
+
+    EBO ebo(ind);
+*/
+
+    glUseProgram(program.getProgram());
+
+    vector<float> vert = {
+	-0.5f, -0.5f, -1,
+	-0.5f, 0.5f, -1,
+	0.5f, 0.5f, -1,
+	0.5f, -0.5f, -1
+    };
+
+    vector<float> col = {
+	1, 0, 0,
+	0, 1, 0,
+	0, 0, 1,
+	1, 1, 0
+    };
+    
+    auto vert_vbo = make_shared<VBO>(vert, 3);
+    auto col_vbo = make_shared<VBO>(col, 3);
+
+    vector<shared_ptr<VBO>> vbos = {vert_vbo, col_vbo};
+
+    vector<int> ids = {
+	0, 1, 2,
+	0, 2, 3 
+    };
+
+    EBO ebo(ids);
+
+    VAO_E vao(vbos, ebo, ebo.getLength());
+
+    while(!glfwWindowShouldClose(window)) {
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	vao.draw();
+
+	glfwPollEvents();
+	glfwSwapBuffers(window);
+    }
 
     glfwTerminate();
 
