@@ -5,16 +5,18 @@ set(project_name "3d_opengl_cpp_test")
 project(${project_name})
 
 add_executable(${project_name}
-	src/main.cpp
+	src/Main.cpp
 
-	src/shader/shader.cpp
-	src/shader/program.cpp
+	src/shader/Shader.cpp
+	src/shader/Program.cpp
 
-	src/gl_objects/vao.cpp
-	src/gl_objects/vao_e.cpp
+	src/gl_objects/Vao.cpp
+	src/gl_objects/Vao_e.cpp
 
-	src/gl_objects/buffers/vbo.cpp
-	src/gl_objects/buffers/ebo.cpp
+	src/gl_objects/buffers/Vbo.cpp
+	src/gl_objects/buffers/Ebo.cpp
+
+	src/world/camera/Camera.cpp
 )
 
 add_subdirectory(libs/glfw)

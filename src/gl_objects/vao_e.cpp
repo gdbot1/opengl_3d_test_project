@@ -1,4 +1,4 @@
-#include "vao_e.h"
+#include "Vao_e.h"
 
 using namespace std;
 
@@ -7,10 +7,6 @@ VAO_E::VAO_E(vector<shared_ptr<VBO>> &vbos, EBO &ebo, int length) {
     this->vbos = vbos;
     this->ebo = &ebo;
     this->vao = createVAO(vbos, ebo);
-}
-
-VAO::VAO() {
-
 }
 
 VAO_E::~VAO_E() {
@@ -43,3 +39,4 @@ void VAO_E::draw() {
     glBindVertexArray(0);
 }
 
+VAO::VAO() {}

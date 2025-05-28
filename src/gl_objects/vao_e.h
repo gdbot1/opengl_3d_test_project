@@ -5,9 +5,9 @@
 
 #include <glad/glad.h>
 
-#include "vao.h"
-#include "buffers/vbo.h"
-#include "buffers/ebo.h"
+#include "Vao.h"
+#include "buffers/Vbo.h"
+#include "buffers/Ebo.h"
 
 using namespace std;
 
@@ -21,7 +21,7 @@ public:
 
     const EBO* getEBO();
 
-    void draw();
+    void draw() override;
 protected:
     EBO* ebo;
 };

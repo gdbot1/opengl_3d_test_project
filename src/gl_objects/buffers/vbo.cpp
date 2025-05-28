@@ -1,4 +1,4 @@
-#include "vbo.h"
+#include "Vbo.h"
 
 using namespace std;
 

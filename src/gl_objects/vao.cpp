@@ -1,4 +1,4 @@
-#include "vao.h"
+#include "Vao.h"
 
 using namespace std;
 

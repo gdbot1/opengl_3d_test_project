@@ -4,14 +4,16 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "shader/shader.h"
-#include "shader/program.h"
+#include "shader/Shader.h"
+#include "shader/Program.h"
 
-#include "gl_objects/vao_e.h"
-#include "gl_objects/vao.h"
+#include "gl_objects/Vao_e.h"
+#include "gl_objects/Vao.h"
 
-#include "gl_objects/buffers/vbo.h"
-#include "gl_objects/buffers/ebo.h"
+#include "gl_objects/buffers/Vbo.h"
+#include "gl_objects/buffers/Ebo.h"
+
+#include "world/camera/Camera.h"
 
 using namespace std;
 
@@ -71,10 +73,10 @@ int main() {
     glUseProgram(program.getProgram());
 
     vector<float> vert = {
-	-0.5f, -0.5f, -1,
-	-0.5f, 0.5f, -1,
-	0.5f, 0.5f, -1,
-	0.5f, -0.5f, -1
+	-0.5f, -0.5f, 1,
+	-0.5f, 0.5f, 1,
+	0.5f, 0.5f, 1,
+	0.5f, -0.5f, 1
     };
 
     vector<float> col = {
@@ -98,9 +100,30 @@ int main() {
 
     VAO_E vao(vbos, ebo, ebo.getLength());
 
-    while(!glfwWindowShouldClose(window)) {
-	glClear(GL_COLOR_BUFFER_BIT);
+    glm::vec3 pos(0, 0, 3), rot(0, 0, 0), scal(1, 1, 1);
 
+    Camera camera(pos, rot, scal);
+
+    camera.setPerspectiveProjectionMatrix(90, 1, 0.1f, 100);
+
+    int view_matrix_uniform = glGetUniformLocation(program.getProgram(), "view_matrix"), projection_matrix_uniform = glGetUniformLocation(program.getProgram(), "projection_matrix");
+
+    float theta = 0;
+
+    while(!glfwWindowShouldClose(window)) {
+	theta ++;
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	camera.setRotation(glm::vec3(0, theta, 0));
+	
+	glm::mat4 view_matrix = camera.getViewMatrix();
+	glUniformMatrix4fv(view_matrix_uniform, 1, GL_FALSE, glm::value_ptr(view_matrix));
+	
+	glm::mat4 projection_matrix = camera.getProjectionMatrix();
+
+	glUniformMatrix4fv(projection_matrix_uniform, 1, GL_FALSE, glm::value_ptr(projection_matrix));
+	
 	vao.draw();
 
 	glfwPollEvents();

@@ -5,7 +5,7 @@
 
 #include <glad/glad.h>
 
-#include "buffers/vbo.h"
+#include "buffers/Vbo.h"
 
 using namespace std;
 

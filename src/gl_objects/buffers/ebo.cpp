@@ -1,4 +1,4 @@
-#include "ebo.h"
+#include "Ebo.h"
 
 using namespace std;
 

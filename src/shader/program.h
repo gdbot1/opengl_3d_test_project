@@ -5,7 +5,7 @@
 
 #include <glad/glad.h>
 
-#include "shader.h"
+#include "Shader.h"
 
 using namespace std;
 
