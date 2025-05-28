@@ -13,15 +13,15 @@ using namespace std;
 
 class VAO_E : public VAO {
 public:
-    VAO_E(vector<shared_ptr<VBO>> &vbos, EBO& ebo, int length);
+    VAO_E(vector<shared_ptr<VBO>> &vbos, shared_ptr<EBO>& ebo, int length);
     
     ~VAO_E();
 
     GLuint createVAO(vector<shared_ptr<VBO>> &vbos, EBO &ebo);
 
-    const EBO* getEBO();
+    const shared_ptr<EBO> getEBO();
 
     void draw() override;
 protected:
-    EBO* ebo;
+    shared_ptr<EBO> ebo;
 };

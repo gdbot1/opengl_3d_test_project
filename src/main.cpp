@@ -15,6 +15,9 @@
 
 #include "world/camera/Camera.h"
 
+#include "world/objects/Object.h"
+#include "world/objects/Cube.h"
+
 using namespace std;
 
 int main() {
@@ -40,6 +43,9 @@ int main() {
 	glfwTerminate();
 	return -1;
     }
+
+    //Enable
+    glEnable(GL_DEPTH_TEST);
 
     auto vert_shader = make_shared<Shader>("../shaders/test.vert", GL_VERTEX_SHADER);
     auto frag_shader = make_shared<Shader>("../shaders/test.frag", GL_FRAGMENT_SHADER);
@@ -96,11 +102,15 @@ int main() {
 	0, 2, 3 
     };
 
-    EBO ebo(ids);
+    shared_ptr<EBO> ebo = make_shared<EBO>(ids);
 
-    VAO_E vao(vbos, ebo, ebo.getLength());
+    shared_ptr<VAO_E> vao = make_shared<VAO_E>(vbos, ebo, ebo->getLength());
 
-    glm::vec3 pos(0, 0, 3), rot(0, 0, 0), scal(1, 1, 1);
+    Object object(vao);
+
+    Cube cube(-3, -2.2f, -2, 1, 1, 1);
+
+    glm::vec3 pos(0, 0, 0), rot(0, 0, 0), scal(1, 1, 1);
 
     Camera camera(pos, rot, scal);
 
@@ -113,7 +123,7 @@ int main() {
     while(!glfwWindowShouldClose(window)) {
 	theta ++;
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	camera.setRotation(glm::vec3(0, theta, 0));
 	
@@ -124,7 +134,9 @@ int main() {
 
 	glUniformMatrix4fv(projection_matrix_uniform, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 	
-	vao.draw();
+	object.render();
+
+	cube.render();
 
 	glfwPollEvents();
 	glfwSwapBuffers(window);

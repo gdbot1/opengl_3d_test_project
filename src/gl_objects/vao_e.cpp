@@ -2,11 +2,11 @@
 
 using namespace std;
 
-VAO_E::VAO_E(vector<shared_ptr<VBO>> &vbos, EBO &ebo, int length) {
+VAO_E::VAO_E(vector<shared_ptr<VBO>> &vbos, shared_ptr<EBO> &ebo, int length) {
     this->length = length;
     this->vbos = vbos;
-    this->ebo = &ebo;
-    this->vao = createVAO(vbos, ebo);
+    this->ebo = ebo;
+    this->vao = createVAO(vbos, *ebo);
 }
 
 VAO_E::~VAO_E() {
@@ -27,7 +27,7 @@ GLuint VAO_E::createVAO(vector<shared_ptr<VBO>> &vbos, EBO &ebo) {
     return vao;
 }
 
-const EBO* VAO_E::getEBO() {
+const shared_ptr<EBO> VAO_E::getEBO() {
     return this->ebo;
 }
 

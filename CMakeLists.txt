@@ -17,6 +17,9 @@ add_executable(${project_name}
 	src/gl_objects/buffers/Ebo.cpp
 
 	src/world/camera/Camera.cpp
+
+	src/world/objects/Object.cpp
+	src/world/objects/Cube.cpp
 )
 
 add_subdirectory(libs/glfw)
