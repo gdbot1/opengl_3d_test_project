@@ -1,8 +1,10 @@
 #pragma once
 
+#include "param/RenderParam.h"
+
 class IRenderable {
 public:
     virtual ~IRenderable() = default;
 
-    virtual void render() = 0;
+    virtual void render(RenderParam &param) = 0;
 };

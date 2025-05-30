@@ -16,7 +16,17 @@ add_executable(${project_name}
 	src/gl_objects/buffers/Vbo.cpp
 	src/gl_objects/buffers/Ebo.cpp
 
+	src/matrix/utils/MatrixUtils.cpp
+
+	src/matrix/projection/ProjectionMatrix.cpp
+	src/matrix/projection/PerspectiveMatrix.cpp
+	src/matrix/projection/OrthogonalMatrix.cpp
+
+	src/matrix/transform/TransformMatrix.cpp
+
 	src/world/camera/Camera.cpp
+
+	src/graphics/param/RenderParam.cpp
 
 	src/world/objects/Object.cpp
 	src/world/objects/Cube.cpp

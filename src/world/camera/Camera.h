@@ -1,44 +1,33 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-using namespace std;
+#include "../../matrix/projection/ProjectionMatrix.h"
+#include "../../matrix/projection/OrthogonalMatrix.h"
+#include "../../matrix/projection/PerspectiveMatrix.h"
+#include "../../matrix/transform/TransformMatrix.h"
 
 class Camera {
 public:
-    Camera();
+    Camera(std::shared_ptr<mtrx::TransformMatrix> view_matrix, std::shared_ptr<mtrx::ProjectionMatrix> project_matrix);
+
+    Camera(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, std::shared_ptr<mtrx::ProjectionMatrix> project_matrix);
 
     Camera(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 
-    ~Camera();
+    Camera(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float fov, float aspect, float near, float far);
 
-    glm::mat4 getViewMatrix();
+    ~Camera() = default;
 
-    glm::mat4 getProjectionMatrix();
+    std::shared_ptr<mtrx::ProjectionMatrix> getProjection();
 
-    void setProjectionMatrix(glm::mat4 projection_matrix);
+    void setProjection(std::shared_ptr<mtrx::ProjectionMatrix> project_matrix);
 
-    void setPerspectiveProjectionMatrix(float fov, float aspect, float near, float far);
+    std::shared_ptr<mtrx::TransformMatrix> getView();
 
-    void setOrthogonalProjectionMatrix(float left, float right, float bottom, float top, float near, float far);
-
-    void setPosition(glm::vec3 position);
-
-    void setRotation(glm::vec3 rotation);
-
-    void setScale(glm::vec3 scale);
-
-    glm::vec3 getPosition();
-
-    glm::vec3 getRotation();
-
-    glm::vec3 getScale();
+    void setView(std::shared_ptr<mtrx::TransformMatrix> view_matrix);
 private:
-    glm::vec3 position, rotation, scale;//x - roll, y - yaw, z - pitch
-    glm::mat4 projection_matrix;//матрица проекции
+    std::shared_ptr<mtrx::TransformMatrix> view_matrix;
+    std::shared_ptr<mtrx::ProjectionMatrix> project_matrix;
 };
