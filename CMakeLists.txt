@@ -16,6 +16,9 @@ add_executable(${project_name}
 	src/gl_objects/buffers/Vbo.cpp
 	src/gl_objects/buffers/Ebo.cpp
 
+	src/gl_objects/texture/Texture.cpp
+	src/gl_objects/texture/utils/TextureUtils.cpp
+
 	src/matrix/utils/MatrixUtils.cpp
 
 	src/matrix/projection/ProjectionMatrix.cpp

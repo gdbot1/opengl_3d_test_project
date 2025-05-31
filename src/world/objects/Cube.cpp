@@ -65,11 +65,41 @@ shared_ptr<VAO> Cube::createCube(float x, float y, float z, float width, float h
 	x, y + height, z
     };
 
+    std::vector<float> texCords = {
+	0, 1,
+	1, 1,
+	1, 0,
+	0, 0,
+
+	0, 1,
+	1, 1,
+	1, 0,
+	0, 0,
+
+	0, 1,
+	1, 1,
+	1, 0,
+	0, 0,
+
+	0, 1,
+	1, 1,
+	1, 0,
+	0, 0,
+
+	0, 1,
+	1, 1,
+	1, 0,
+	0, 0,
+
+	0, 1,
+	1, 1,
+	1, 0,
+	0, 0,
+    };
+
     std::cout << "CREATING CUBE: calc color" << std::endl;
 
     std::vector<float> colors;
-
-    std::cout << "top" << std::endl;
 
     for (int i = 0; i < 4; i++) {
 	colors.push_back(0);//r
@@ -77,15 +107,11 @@ shared_ptr<VAO> Cube::createCube(float x, float y, float z, float width, float h
 	colors.push_back(1);//b
     }
 
-    std::cout << "bot" << std::endl;
-
     for (int i = 4; i < 8; i++) {
 	colors.push_back(1);//r
 	colors.push_back(1);//g
 	colors.push_back(0);//b
     }
-
-    std::cout << "right" << std::endl;
 
     for (int i = 8; i < 12; i++) {
 	colors.push_back(1);//r
@@ -93,15 +119,11 @@ shared_ptr<VAO> Cube::createCube(float x, float y, float z, float width, float h
 	colors.push_back(0);//b
     }
 
-    std::cout << "left" << std::endl;
-
     for (int i = 12; i < 16; i++) {
 	colors.push_back(0);//r
 	colors.push_back(1);//g
 	colors.push_back(1);//b
     }
-
-    std::cout << "front" << std::endl;
 
     for (int i = 16; i < 20; i++) {
 	colors.push_back(0);//r
@@ -109,15 +131,11 @@ shared_ptr<VAO> Cube::createCube(float x, float y, float z, float width, float h
 	colors.push_back(0);//b
     }
 
-    std::cout << "back" << std::endl;
-
     for (int i = 20; i < 24; i++) {
 	colors.push_back(1);//r
 	colors.push_back(0);//g
 	colors.push_back(1);//b
     }
-
-    std::cout << "CREATING CUBE: calc indexes" << std::endl;
     
     std::vector<int> ind = {
 	0, 1, 2,
@@ -143,6 +161,7 @@ shared_ptr<VAO> Cube::createCube(float x, float y, float z, float width, float h
 
     return make_shared<VAO_E>(std::vector<std::shared_ptr<VBO>>{
 	make_shared<VBO>(vertices, 3),
-	make_shared<VBO>(colors, 3)
+	make_shared<VBO>(colors, 3),
+	make_shared<VBO>(texCords, 2)
     }, make_shared<EBO>(ind), static_cast<int>(ind.size()));
 }

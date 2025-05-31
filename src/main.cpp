@@ -14,6 +14,8 @@
 #include "gl_objects/buffers/Vbo.h"
 #include "gl_objects/buffers/Ebo.h"
 
+#include "gl_objects/texture/Texture.h"
+
 #include "matrix/utils/MatrixUtils.h"
 
 #include "matrix/projection/ProjectionMatrix.h"
@@ -71,6 +73,10 @@ int main() {
     //render param
     RenderParam param(program);
 
+    shared_ptr<tex::Texture> texture = make_shared<tex::Texture>("../textures/03.png");
+
+    cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << texture->getTexture() << endl;
+
 /*
     vector<float> vertices = {
 	1, 0, 2,
@@ -106,11 +112,19 @@ int main() {
 	0, 0, 1,
 	1, 1, 0
     };
+
+    vector<float> texCords = {
+	0, 1,
+	0, 0,
+	1, 0,
+	1, 1
+    };
     
     auto vert_vbo = make_shared<VBO>(vert, 3);
     auto col_vbo = make_shared<VBO>(col, 3);
+    auto tex_vbo = make_shared<VBO>(texCords, 2);
 
-    vector<shared_ptr<VBO>> vbos = {vert_vbo, col_vbo};
+    vector<shared_ptr<VBO>> vbos = {vert_vbo, col_vbo, tex_vbo};
 
     vector<int> ids = {
 	0, 1, 2,
@@ -121,12 +135,13 @@ int main() {
 
     shared_ptr<VAO_E> vao = make_shared<VAO_E>(vbos, ebo, ebo->getLength());
 
-    Object object(vao);
+    Object object(vao, texture);
 
     Cube cube(-0.5f, -0.5f, -0.5f, 1, 1, 1);
-    cube.getModule()->setPosition(glm::vec3(2, 0, 2));//change cube position
+    cube.getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
+    //cube.setTexture(texture);
 
-    glm::vec3 pos(0, 0, 3), rot(0, 0, 0), scal(1, 1, 1);
+    glm::vec3 pos(0, 0, 1), rot(0, 0, 0), scal(1, 1, 1);
 
     Camera camera(pos, rot, scal, 90, 1, 0.1f, 100);
 
@@ -142,8 +157,8 @@ int main() {
 	camera.getView()->setRotation(glm::vec3(0, cos(theta*3.14f/180) * 45 + 180, 0));
 
 	//cube squash
-	cube.getModule()->setRotation(glm::vec3(0, theta, 0));
-	cube.getModule()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
+	cube.getModel()->setRotation(glm::vec3(0, theta, theta/2));
+	cube.getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
 	
 	glm::mat4 view_matrix = camera.getView()->getMatrix();
 	glUniformMatrix4fv(view_matrix_uniform, 1, GL_FALSE, glm::value_ptr(view_matrix));
