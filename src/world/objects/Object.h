@@ -11,6 +11,7 @@
 #include "../../matrix/utils/MatrixUtils.h"
 
 #include "../../matrix/transform/TransformMatrix.h"
+#include "../../matrix/transform/ModelMatrix.h"
 
 class Object : public IRenderable {
 public:

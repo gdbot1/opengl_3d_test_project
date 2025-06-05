@@ -10,11 +10,11 @@ class TransformMatrix : mtrx::IMatrix {
 public:
     TransformMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);//mode = 1
 
-    TransformMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mode, bool inverse);
+    TransformMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mode);
 
-    ~TransformMatrix() = default;
+    virtual ~TransformMatrix() = default;
 
-    glm::mat4 getMatrix() const override;
+    virtual glm::mat4 getMatrix() const override = 0;
 
     void setPosition(glm::vec3 position);
 
@@ -24,8 +24,6 @@ public:
 
     void setMode(float mode);
 
-    void setInverse(bool inverse);
-
     glm::vec3 getPosition() const;
 
     glm::vec3 getRotation() const;
@@ -33,12 +31,9 @@ public:
     glm::vec3 getScale() const;
 
     float getMode() const;
-
-    bool getInverse() const;
-private:
+protected:
     glm::vec3 position, rotation, scale;//x - pitch, y - yaw, z - roll
     float mode;//множитель при getMatrix
-    bool inverse;
 };
 
 }

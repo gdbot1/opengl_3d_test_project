@@ -7,6 +7,7 @@
 #include "../../matrix/projection/OrthogonalMatrix.h"
 #include "../../matrix/projection/PerspectiveMatrix.h"
 #include "../../matrix/transform/TransformMatrix.h"
+#include "../../matrix/transform/ViewMatrix.h"
 
 class Camera {
 public:

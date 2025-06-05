@@ -34,6 +34,24 @@
 
 using namespace std;
 
+void keyPressed(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        cout << "key pressed" << endl;
+
+	if (key == GLFW_KEY_A) {
+	    cout << "pressed A" << endl;
+	}
+    }
+    else if (action == GLFW_RELEASE) {
+	cout << "key released" << endl;
+    }
+}
+
+void windowResize(GLFWwindow* window, int width, int height) {
+    cout << "window resized, w:" << width << " h:" << height << endl;
+    glViewport(0, 0, width, height);
+}
+
 int main() {
     if (!glfwInit()) {
 	cerr << "FATAL ERROR: glfw can't be inited" << endl;
@@ -76,6 +94,9 @@ int main() {
     shared_ptr<tex::Texture> texture = make_shared<tex::Texture>("../textures/03.png");
 
     cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << texture->getTexture() << endl;
+
+    glfwSetKeyCallback(window, keyPressed);
+    glfwSetFramebufferSizeCallback(window, windowResize);
 
 /*
     vector<float> vertices = {

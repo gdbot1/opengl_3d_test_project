@@ -26,6 +26,8 @@ add_executable(${project_name}
 	src/matrix/projection/OrthogonalMatrix.cpp
 
 	src/matrix/transform/TransformMatrix.cpp
+	src/matrix/transform/ViewMatrix.cpp
+	src/matrix/transform/ModelMatrix.cpp
 
 	src/world/camera/Camera.cpp
 
