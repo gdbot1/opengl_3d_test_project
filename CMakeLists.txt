@@ -10,14 +10,22 @@ add_executable(${project_name}
 	src/shader/Shader.cpp
 	src/shader/Program.cpp
 
-	src/gl_objects/Vao.cpp
-	src/gl_objects/Vao_e.cpp
+	src/graphics/gl_objects/Vao.cpp
+	src/graphics/gl_objects/Vao_e.cpp
 
-	src/gl_objects/buffers/Vbo.cpp
-	src/gl_objects/buffers/Ebo.cpp
+	src/graphics/gl_objects/buffers/Vbo.cpp
+	src/graphics/gl_objects/buffers/Ebo.cpp
 
-	src/gl_objects/texture/Texture.cpp
-	src/gl_objects/texture/utils/TextureUtils.cpp
+	src/graphics/gl_objects/texture/Texture.cpp
+	src/graphics/gl_objects/texture/utils/TextureUtils.cpp
+
+	src/graphics/elements/window/Window.cpp
+
+	src/graphics/elements/window/callback/GLFWCallback.cpp
+	src/graphics/elements/window/callback/keyCallback/KeyEvent.cpp
+	src/graphics/elements/window/callback/keyCallback/KeyDispatcher.cpp
+
+	src/graphics/param/RenderParam.cpp
 
 	src/matrix/utils/MatrixUtils.cpp
 
@@ -30,8 +38,6 @@ add_executable(${project_name}
 	src/matrix/transform/ModelMatrix.cpp
 
 	src/world/camera/Camera.cpp
-
-	src/graphics/param/RenderParam.cpp
 
 	src/world/objects/Object.cpp
 	src/world/objects/Cube.cpp
@@ -46,3 +52,5 @@ target_link_libraries(${project_name} glfw)
 target_link_libraries(${project_name} glad)
 target_link_libraries(${project_name} glm)
 target_link_libraries(${project_name} igl_stb_image)
+
+target_include_directories(${project_name} PRIVATE ${PROJECT_SOURCE_DIR}/src)

@@ -5,11 +5,13 @@
 
 #include <glad/glad.h>
 
+#include "../IRenderable.h"
+
 #include "buffers/Vbo.h"
 
 using namespace std;
 
-class VAO {
+class VAO : public IRenderable {
 public:
     VAO(vector<shared_ptr<VBO>> &vbos, int length);
     
@@ -23,7 +25,7 @@ public:
 
     virtual vector<shared_ptr<VBO>>& getVBOs();
 
-    virtual void draw();
+    virtual void render(RenderParam &param) override;
 
     virtual void destroy();
 protected:

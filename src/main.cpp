@@ -8,13 +8,17 @@
 #include "shader/Shader.h"
 #include "shader/Program.h"
 
-#include "gl_objects/Vao_e.h"
-#include "gl_objects/Vao.h"
+#include "graphics/gl_objects/Vao_e.h"
+#include "graphics/gl_objects/Vao.h"
 
-#include "gl_objects/buffers/Vbo.h"
-#include "gl_objects/buffers/Ebo.h"
+#include "graphics/gl_objects/buffers/Vbo.h"
+#include "graphics/gl_objects/buffers/Ebo.h"
 
-#include "gl_objects/texture/Texture.h"
+#include "graphics/gl_objects/texture/Texture.h"
+
+#include "graphics/elements/window/Window.h"
+
+#include "graphics/param/RenderParam.h"
 
 #include "matrix/utils/MatrixUtils.h"
 
@@ -27,49 +31,55 @@
 
 #include "world/camera/Camera.h"
 
-#include "graphics/param/RenderParam.h"
-
 #include "world/objects/Object.h"
 #include "world/objects/Cube.h"
 
+#include "events/Dispatcher.h"
+
+#include "graphics/elements/window/callback/GLFWCallback.h"
+#include "graphics/elements/window/callback/keyCallback/KeyDispatcher.h"
+
 using namespace std;
-
-void keyPressed(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (action == GLFW_PRESS) {
-        cout << "key pressed" << endl;
-
-	if (key == GLFW_KEY_A) {
-	    cout << "pressed A" << endl;
-	}
-    }
-    else if (action == GLFW_RELEASE) {
-	cout << "key released" << endl;
-    }
-}
 
 void windowResize(GLFWwindow* window, int width, int height) {
     cout << "window resized, w:" << width << " h:" << height << endl;
     glViewport(0, 0, width, height);
 }
 
+class L : public callback::KeyListener {
+public:
+    void onKeyEvent(callback::KeyEvent &event) override {
+	cout << "KeyEvent: " << event.getKey() << endl;
+    }
+};
+
 int main() {
     if (!glfwInit()) {
 	cerr << "FATAL ERROR: glfw can't be inited" << endl;
 	return -1;
     }
+    
+    gr::Window window(500, 500, "OpenGL Project");
 
-    glfwDefaultWindowHints();
+    L l;
 
-    GLFWwindow* window = glfwCreateWindow(500, 500, "3D OpenGL", nullptr, nullptr);
+    std::cout << "1 stage" << std::endl;
+    window.createCallback();
 
-    if (window == nullptr) {
-	cerr << "FATAL ERROR: window can't be created" << endl;
-	glfwTerminate();
-	return -1;
+    std::cout << "2 stage" << std::endl;
+
+    shared_ptr<callback::GLFWCallback> o = window.getCallback();
+
+    if (o == nullptr) {
+	cout << "nullptr" << endl;
+    }
+    else {
+	cout << "not nullptr" << endl;
     }
     
-    glfwMakeContextCurrent(window);
-    
+    std::cout << "3 stage" << std::endl;
+
+    window.getCallback()->getKeyEvent()->addListener(&l);
     if (!gladLoadGL()) {
 	cerr << "FATAL ERROR: glad can't be inited" << endl;
 	glfwTerminate();
@@ -93,10 +103,8 @@ int main() {
 
     shared_ptr<tex::Texture> texture = make_shared<tex::Texture>("../textures/03.png");
 
-    cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << texture->getTexture() << endl;
-
-    glfwSetKeyCallback(window, keyPressed);
-    glfwSetFramebufferSizeCallback(window, windowResize);
+    cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << endl;
+    glfwSetFramebufferSizeCallback(window.getWindow(), windowResize);
 
 /*
     vector<float> vertices = {
@@ -170,7 +178,7 @@ int main() {
 
     float theta = 0;
 
-    while(!glfwWindowShouldClose(window)) {
+    while(!glfwWindowShouldClose(window.getWindow())) {
 	theta ++;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -193,7 +201,7 @@ int main() {
 	cube.render(param);
 
 	glfwPollEvents();
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(window.getWindow());
     }
 
     glfwTerminate();

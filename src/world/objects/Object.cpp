@@ -66,5 +66,5 @@ void Object::render(RenderParam &param) {
 
     mtrx::uniform(param.program->getProgram(), "model_matrix", this->model_matrix->getMatrix());
 
-    this->vao->draw();
+    this->vao->render(param);
 }

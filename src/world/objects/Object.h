@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../gl_objects/Vao.h"
+#include "../../graphics/gl_objects/Vao.h"
 
-#include "../../gl_objects/texture/Texture.h"
+#include "../../graphics/gl_objects/texture/Texture.h"
 
-#include "../../gl_objects/texture/utils/TextureUtils.h"
+#include "../../graphics/gl_objects/texture/utils/TextureUtils.h"
 
 #include "../../graphics/IRenderable.h"
 

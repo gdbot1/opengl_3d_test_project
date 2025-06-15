@@ -37,7 +37,7 @@ vector<shared_ptr<VBO>>& VAO::getVBOs() {
     return this->vbos;
 }
 
-void VAO::draw() {
+void VAO::render(RenderParam &param) {
     glBindVertexArray(vao);
 
     glDrawArrays(GL_TRIANGLES, 0, length);

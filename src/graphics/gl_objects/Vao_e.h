@@ -21,7 +21,7 @@ public:
 
     const shared_ptr<EBO> getEBO();
 
-    void draw() override;
+    void render(RenderParam &param) override;
 protected:
     shared_ptr<EBO> ebo;
 };

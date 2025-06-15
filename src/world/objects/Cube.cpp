@@ -1,8 +1,5 @@
 #include "Cube.h"
 
-#include "../../gl_objects/Vao_e.h"
-#include "../../gl_objects/buffers/Ebo.h"
-
 Cube::Cube(float x, float y, float z, float width, float height, float depth) : Object(createCube(x, y, z, width, height, depth)) {
     this->x = x;
     this->y = y;

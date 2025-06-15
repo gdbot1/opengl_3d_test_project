@@ -4,6 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "../../graphics/gl_objects/Vao_e.h"
+#include "../../graphics/gl_objects/buffers/Ebo.h"
+
 #include "Object.h"
 
 class Cube : public Object{
