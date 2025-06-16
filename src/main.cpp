@@ -38,18 +38,24 @@
 
 #include "graphics/elements/window/callback/GLFWCallback.h"
 #include "graphics/elements/window/callback/keyCallback/KeyDispatcher.h"
+#include "graphics/elements/window/callback/mouseCallback/MouseDispatcher.h"
+#include "graphics/elements/window/callback/windowCallback/WindowDispatcher.h"
 
 using namespace std;
 
-void windowResize(GLFWwindow* window, int width, int height) {
-    cout << "window resized, w:" << width << " h:" << height << endl;
-    glViewport(0, 0, width, height);
-}
-
-class L : public callback::KeyListener {
+class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener {
 public:
     void onKeyEvent(callback::KeyEvent &event) override {
-	cout << "KeyEvent: " << event.getKey() << endl;
+	cout << "KeyEvent: " << event.getKey() << " " << event.getAction() << endl;
+    }
+
+    void onMouseButtonEvent(callback::MouseButtonEvent &event) override {
+	cout << "MouseEvent: " << event.getButton() << " " << event.getAction() << endl;
+    }
+
+    void onFramebufferSizeEvent(callback::FramebufferSizeEvent &event) {
+	cout << "WindowEvent: " << event.getWidth() << " " << event.getHeight() << endl;
+	glViewport(0, 0, event.getWidth(), event.getHeight());
     }
 };
 
@@ -63,23 +69,12 @@ int main() {
 
     L l;
 
-    std::cout << "1 stage" << std::endl;
     window.createCallback();
 
-    std::cout << "2 stage" << std::endl;
-
-    shared_ptr<callback::GLFWCallback> o = window.getCallback();
-
-    if (o == nullptr) {
-	cout << "nullptr" << endl;
-    }
-    else {
-	cout << "not nullptr" << endl;
-    }
-    
-    std::cout << "3 stage" << std::endl;
-
     window.getCallback()->getKeyEvent()->addListener(&l);
+    window.getCallback()->getMouseEvent()->addListener(&l);
+    window.getCallback()->getWindowEvent()->addListener(&l);
+
     if (!gladLoadGL()) {
 	cerr << "FATAL ERROR: glad can't be inited" << endl;
 	glfwTerminate();
@@ -104,27 +99,6 @@ int main() {
     shared_ptr<tex::Texture> texture = make_shared<tex::Texture>("../textures/03.png");
 
     cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << endl;
-    glfwSetFramebufferSizeCallback(window.getWindow(), windowResize);
-
-/*
-    vector<float> vertices = {
-	1, 0, 2,
-	3, 2, 1,
-	2, 4, 4,
-	8, -1, 1
-    };
-
-    VBO vbo(vertices, 3);
-
-    vector<int> ind = {
-	1, 2, 3,
-	1, 3, 4,
-	2, 4, 1,
-	3, 1, 2
-    };
-
-    EBO ebo(ind);
-*/
 
     glUseProgram(program->getProgram());
 

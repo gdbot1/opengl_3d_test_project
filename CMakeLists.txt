@@ -24,6 +24,10 @@ add_executable(${project_name}
 	src/graphics/elements/window/callback/GLFWCallback.cpp
 	src/graphics/elements/window/callback/keyCallback/KeyEvent.cpp
 	src/graphics/elements/window/callback/keyCallback/KeyDispatcher.cpp
+	src/graphics/elements/window/callback/mouseCallback/events/MouseButtonEvent.cpp
+	src/graphics/elements/window/callback/mouseCallback/MouseDispatcher.cpp
+	src/graphics/elements/window/callback/windowCallback/events/FramebufferSizeEvent.cpp
+	src/graphics/elements/window/callback/windowCallback/WindowDispatcher.cpp
 
 	src/graphics/param/RenderParam.cpp
 
