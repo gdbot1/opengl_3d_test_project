@@ -15,8 +15,10 @@ add_executable(${project_name}
 
 	src/graphics/gl_objects/buffers/Vbo.cpp
 	src/graphics/gl_objects/buffers/Ebo.cpp
+	src/graphics/gl_objects/buffers/Fbo.cpp
 
 	src/graphics/gl_objects/texture/Texture.cpp
+	src/graphics/gl_objects/texture/DepthTexture.cpp
 	src/graphics/gl_objects/texture/utils/TextureUtils.cpp
 
 	src/graphics/elements/window/Window.cpp
@@ -34,7 +36,8 @@ add_executable(${project_name}
 	src/matrix/utils/MatrixUtils.cpp
 
 	src/matrix/projection/ProjectionMatrix.cpp
-	src/matrix/projection/PerspectiveMatrix.cpp
+	src/matrix/projection/perspective/PerspectiveMatrix.cpp
+	src/matrix/projection/perspective/PerspectiveWindowMatrix.cpp
 	src/matrix/projection/OrthogonalMatrix.cpp
 
 	src/matrix/transform/TransformMatrix.cpp

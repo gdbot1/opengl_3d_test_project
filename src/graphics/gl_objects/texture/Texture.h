@@ -3,34 +3,36 @@
 #include <glad/glad.h>
 #include <memory>
 
+#include "utils/TextureUtils.h"
+
 namespace tex {
 
 class Texture {
 public:
     Texture(const char* path);
 
-    ~Texture();//delete texture from videocard space
+    Texture(int width, int height);
 
-    void bindSampler(int sampler);
+    virtual ~Texture();//delete texture from videocard space
 
-    GLuint getTexture() const;
+    virtual void bindSampler(int sampler);
 
-    int getWidth() const;
+    virtual GLuint getTexture() const;
 
-    int getHeight() const;
+    virtual GLuint getTarget() const;
 
-    int getCnt() const;
+    virtual int getWidth() const;
 
-    void destroy();
-private:
-    GLuint texture;
+    virtual int getHeight() const;
+
+    virtual int getCnt() const;
+
+    virtual void destroy();
+protected:
+    GLuint texture, target;
     int width, height, cnt;
 
-    GLuint createTexture(unsigned char* content, int width, int height, int cnt);
-
-    unsigned char* loadTexture(const char* path, int &width, int &height, int &cnt);
-
-    void deleteImageFromCPU(unsigned char* content);
+    Texture() = default;
 };
 
 }

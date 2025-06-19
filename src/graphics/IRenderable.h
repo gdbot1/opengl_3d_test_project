@@ -1,6 +1,6 @@
 #pragma once
 
-#include "param/RenderParam.h"
+#include "graphics/param/RenderParam.h"
 
 class IRenderable {
 public:

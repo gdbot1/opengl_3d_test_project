@@ -13,8 +13,10 @@
 
 #include "graphics/gl_objects/buffers/Vbo.h"
 #include "graphics/gl_objects/buffers/Ebo.h"
+#include "graphics/gl_objects/buffers/Fbo.h"
 
 #include "graphics/gl_objects/texture/Texture.h"
+#include "graphics/gl_objects/texture/DepthTexture.h"
 
 #include "graphics/elements/window/Window.h"
 
@@ -25,7 +27,8 @@
 #include "matrix/projection/ProjectionMatrix.h"
 
 #include "matrix/projection/OrthogonalMatrix.h"
-#include "matrix/projection/PerspectiveMatrix.h"
+#include "matrix/projection/perspective/PerspectiveMatrix.h"
+#include "matrix/projection/perspective/PerspectiveWindowMatrix.h"
 
 #include "matrix/transform/TransformMatrix.h"
 
@@ -97,6 +100,16 @@ int main() {
     RenderParam param(program);
 
     shared_ptr<tex::Texture> texture = make_shared<tex::Texture>("../textures/03.png");
+    
+    shared_ptr<tex::Texture> normal_texture = make_shared<tex::Texture>(1000, 1000);
+    shared_ptr<tex::DepthTexture> depth_texture = make_shared<tex::DepthTexture>(1920, 2100);
+
+    FBO fbo;
+
+    fbo.bind();
+    fbo.linkTexture((*normal_texture), GL_COLOR_ATTACHMENT0, 0);
+    fbo.linkTexture((*depth_texture), GL_DEPTH_ATTACHMENT, 0);
+    fbo.unbind();
 
     cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << endl;
 
@@ -117,10 +130,10 @@ int main() {
     };
 
     vector<float> texCords = {
-	0, 1,
-	0, 0,
 	1, 0,
-	1, 1
+	1, 1,
+	0, 1,
+	0, 0
     };
     
     auto vert_vbo = make_shared<VBO>(vert, 3);
@@ -140,17 +153,29 @@ int main() {
 
     Object object(vao, texture);
 
+    Object object2(vao, normal_texture);
+    object2.getModel()->setPosition(glm::vec3(1, 1, 0.5f));
+    object2.getModel()->setRotation(glm::vec3(-25, 45, 0));
+
     Cube cube(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     cube.getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
     //cube.setTexture(texture);
 
     glm::vec3 pos(0, 0, 1), rot(0, 0, 0), scal(1, 1, 1);
 
-    Camera camera(pos, rot, scal, 90, 1, 0.1f, 100);
+    //Camera camera(pos, rot, scal, 90, 1, 0.1f, 100);
+    
+    shared_ptr<mtrx::PerspectiveWindowMatrix> projection_matrix = make_shared<mtrx::PerspectiveWindowMatrix>(90, 1, 0.1f, 100);
+    
+    window.getCallback()->getWindowEvent()->addListener(&(*projection_matrix));
+
+    Camera camera(pos, rot, scal, projection_matrix);
 
     int view_matrix_uniform = glGetUniformLocation(program->getProgram(), "view_matrix"), projection_matrix_uniform = glGetUniformLocation(program->getProgram(), "projection_matrix");
 
     float theta = 0;
+
+    glClearColor(1, 1, 1, 1);
 
     while(!glfwWindowShouldClose(window.getWindow())) {
 	theta ++;
@@ -170,7 +195,16 @@ int main() {
 
 	glUniformMatrix4fv(projection_matrix_uniform, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
+	fbo.bind();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	object.render(param);
+	object2.render(param);
+	cube.render(param);
+	fbo.unbind();
+
+	object.render(param);
+
+	object2.render(param);
 
 	cube.render(param);
 

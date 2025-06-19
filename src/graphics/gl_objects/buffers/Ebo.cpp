@@ -15,6 +15,7 @@ EBO::EBO(vector<int> &vertices) {
 }
 
 EBO::~EBO() {
+    cout << "EBO: " << ebo << " - destroyed" << endl;
     destroy();
 }
 
