@@ -13,7 +13,8 @@
 
 #include "graphics/gl_objects/buffers/Vbo.h"
 #include "graphics/gl_objects/buffers/Ebo.h"
-#include "graphics/gl_objects/buffers/Fbo.h"
+#include "graphics/gl_objects/buffers/fbo/Fbo.h"
+#include "graphics/gl_objects/buffers/fbo/LayerFbo.h"
 
 #include "graphics/gl_objects/texture/Texture.h"
 #include "graphics/gl_objects/texture/DepthTexture.h"
@@ -45,6 +46,33 @@
 #include "graphics/elements/window/callback/windowCallback/WindowDispatcher.h"
 
 using namespace std;
+
+class O : public callback::WindowListener {
+public:
+    O(shared_ptr<tex::Texture> texture) {
+	this->texture = texture;
+    }
+
+    void draw() {
+	texture->bind();
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex2f(-aspect, -1);
+	glTexCoord2f(1, 0); glVertex2f( aspect, -1);
+	glTexCoord2f(1, 1); glVertex2f( aspect,  1);
+	glTexCoord2f(0, 1); glVertex2f(-aspect,  1);
+	glEnd();
+
+	texture->unbind();
+    }
+
+    void onFramebufferSizeEvent(callback::FramebufferSizeEvent &event) {
+	aspect = static_cast<float>(event.getWidth()) / static_cast<float>(event.getHeight());
+    }
+private:
+    shared_ptr<tex::Texture> texture;
+    float aspect = 1;
+};
 
 class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener {
 public:
@@ -86,6 +114,7 @@ int main() {
 
     //Enable
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
 
     auto vert_shader = make_shared<Shader>("../shaders/test.vert", GL_VERTEX_SHADER);
     auto frag_shader = make_shared<Shader>("../shaders/test.frag", GL_FRAGMENT_SHADER);
@@ -101,8 +130,11 @@ int main() {
 
     shared_ptr<tex::Texture> texture = make_shared<tex::Texture>("../textures/03.png");
     
-    shared_ptr<tex::Texture> normal_texture = make_shared<tex::Texture>(1000, 1000);
-    shared_ptr<tex::DepthTexture> depth_texture = make_shared<tex::DepthTexture>(1920, 2100);
+    LayerFBO fbo(2048, 2048);
+
+/*
+    shared_ptr<tex::Texture> normal_texture = make_shared<tex::Texture>(texture->getWidth(), texture->getHeight());
+    shared_ptr<tex::DepthTexture> depth_texture = make_shared<tex::DepthTexture>(texture->getWidth(), texture->getHeight());
 
     FBO fbo;
 
@@ -110,10 +142,11 @@ int main() {
     fbo.linkTexture((*normal_texture), GL_COLOR_ATTACHMENT0, 0);
     fbo.linkTexture((*depth_texture), GL_DEPTH_ATTACHMENT, 0);
     fbo.unbind();
+*/
 
     cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << endl;
 
-    glUseProgram(program->getProgram());
+    //glUseProgram(program->getProgram());
 
     vector<float> vert = {
 	-0.5f, -0.5f, 1,
@@ -153,7 +186,7 @@ int main() {
 
     Object object(vao, texture);
 
-    Object object2(vao, normal_texture);
+    Object object2(vao, fbo.getColorTexture());
     object2.getModel()->setPosition(glm::vec3(1, 1, 0.5f));
     object2.getModel()->setRotation(glm::vec3(-25, 45, 0));
 
@@ -177,7 +210,10 @@ int main() {
 
     glClearColor(1, 1, 1, 1);
 
+    O o(fbo.getColorTexture());
+
     while(!glfwWindowShouldClose(window.getWindow())) {
+        glUseProgram(program->getProgram());
 	theta ++;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -207,6 +243,10 @@ int main() {
 	object2.render(param);
 
 	cube.render(param);
+	
+	glUseProgram(0);
+
+	o.draw();
 
 	glfwPollEvents();
 	glfwSwapBuffers(window.getWindow());

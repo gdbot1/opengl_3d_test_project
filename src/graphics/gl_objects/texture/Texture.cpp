@@ -24,7 +24,29 @@ tex::Texture::~Texture() {
 void tex::Texture::bindSampler(int sampler) {
     glActiveTexture(GL_TEXTURE0 + sampler);
 
+    bind();
+}
+
+void tex::Texture::bind() {
     glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+void tex::Texture::unbind() {
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void tex::Texture::clone(tex::Texture &to) {
+    int width = to.getWidth(), height = to.getHeight();
+
+    if (width != this->width || height != this->height) {
+	throw std::runtime_error("TEXTURE CLONE ERROR: clone texture error, different texture dimensions");
+    }
+
+    glCopyImageSubData(
+	this->texture, this->target, 0, 0, 0, 0,
+	to.getTexture(), to.getTarget(), 0, 0, 0, 0,
+	width, height, 1
+    );
 }
 
 GLuint tex::Texture::getTexture() const {

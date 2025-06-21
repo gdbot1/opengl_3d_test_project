@@ -34,6 +34,14 @@ void FBO::unbind() {
     glBindFramebuffer(target, 0);
 }
 
+GLuint FBO::getFBO() const {
+    return this->fbo;
+}
+
+GLuint FBO::getTarget() const {
+    return this->target;
+}
+
 void FBO::destroy() {
     glDeleteFramebuffers(1, &fbo);
 }

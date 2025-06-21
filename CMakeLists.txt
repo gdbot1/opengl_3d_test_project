@@ -15,7 +15,8 @@ add_executable(${project_name}
 
 	src/graphics/gl_objects/buffers/Vbo.cpp
 	src/graphics/gl_objects/buffers/Ebo.cpp
-	src/graphics/gl_objects/buffers/Fbo.cpp
+	src/graphics/gl_objects/buffers/fbo/Fbo.cpp
+	src/graphics/gl_objects/buffers/fbo/LayerFbo.cpp
 
 	src/graphics/gl_objects/texture/Texture.cpp
 	src/graphics/gl_objects/texture/DepthTexture.cpp

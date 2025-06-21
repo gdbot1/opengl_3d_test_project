@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <memory>
+#include <stdexcept>
 
 #include "utils/TextureUtils.h"
 
@@ -16,6 +17,12 @@ public:
     virtual ~Texture();//delete texture from videocard space
 
     virtual void bindSampler(int sampler);
+
+    virtual void bind();
+
+    virtual void unbind();
+
+    virtual void clone(tex::Texture &to);
 
     virtual GLuint getTexture() const;
 
