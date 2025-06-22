@@ -33,6 +33,7 @@
 
 #include "matrix/transform/TransformMatrix.h"
 
+#include "world/scene/Scene.h"
 #include "world/camera/Camera.h"
 
 #include "world/objects/Object.h"
@@ -45,21 +46,53 @@
 #include "graphics/elements/window/callback/mouseCallback/MouseDispatcher.h"
 #include "graphics/elements/window/callback/windowCallback/WindowDispatcher.h"
 
+#include "graphics/IRenderable.h"
+
 using namespace std;
 
-class O : public callback::WindowListener {
+class Swap : public IRenderable {
+public:
+    void render(RenderParam &param) override {
+	param.fbo_input->cloneData(*param.fbo_output);
+    }
+};
+
+class A : public IRenderable {
+public:
+    A(shared_ptr<Program> program) {
+	this->program = program;
+    }
+
+    void render(RenderParam &param) override {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glUseProgram(program->getProgram());
+	param.setProgram(program);
+    }
+private:
+    shared_ptr<Program> program;
+};
+
+class O : public callback::WindowListener, public IRenderable {
 public:
     O(shared_ptr<tex::Texture> texture) {
 	this->texture = texture;
     }
 
-    void draw() {
+    void render(RenderParam &param) override {
+	param.fbo_input->unbind();
+
+	glUseProgram(0);
+	
+	cout << "tex " << texture->getWidth() << " " << texture->getHeight() << endl;
+	
+	//shared_ptr<tex::Texture> texture = param.fbo_input->getColorTexture();
+
 	texture->bind();
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0); glVertex2f(-aspect, -1);
-	glTexCoord2f(1, 0); glVertex2f( aspect, -1);
-	glTexCoord2f(1, 1); glVertex2f( aspect,  1);
+	glTexCoord2f(1, 0); glVertex2f(aspect, -1);
+	glTexCoord2f(1, 1); glVertex2f(aspect,  1);
 	glTexCoord2f(0, 1); glVertex2f(-aspect,  1);
 	glEnd();
 
@@ -130,7 +163,11 @@ int main() {
 
     shared_ptr<tex::Texture> texture = make_shared<tex::Texture>("../textures/03.png");
     
-    LayerFBO fbo(2048, 2048);
+    LayerFBO fbo(1920, 1080);
+
+    cout << "layer FBO: " << fbo.getWidth() << " " << fbo.getHeight() << " created" << endl; 
+
+    Scene scene(1920, 1080);
 
 /*
     shared_ptr<tex::Texture> normal_texture = make_shared<tex::Texture>(texture->getWidth(), texture->getHeight());
@@ -184,14 +221,14 @@ int main() {
 
     shared_ptr<VAO_E> vao = make_shared<VAO_E>(vbos, ebo, ebo->getLength());
 
-    Object object(vao, texture);
+    shared_ptr<Object> object = make_shared<Object>(vao, texture);
 
-    Object object2(vao, fbo.getColorTexture());
-    object2.getModel()->setPosition(glm::vec3(1, 1, 0.5f));
-    object2.getModel()->setRotation(glm::vec3(-25, 45, 0));
+    shared_ptr<Object> object2 = make_shared<Object>(vao, scene.getFBOOutput()->getColorTexture());
+    object2->getModel()->setPosition(glm::vec3(1, 1, 0.5f));
+    object2->getModel()->setRotation(glm::vec3(-25, 45, 0));
 
-    Cube cube(-0.5f, -0.5f, -0.5f, 1, 1, 1);
-    cube.getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
+    shared_ptr<Cube> cube = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
+    cube->getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
     //cube.setTexture(texture);
 
     glm::vec3 pos(0, 0, 1), rot(0, 0, 0), scal(1, 1, 1);
@@ -210,7 +247,20 @@ int main() {
 
     glClearColor(1, 1, 1, 1);
 
-    O o(fbo.getColorTexture());
+    shared_ptr<O> o = make_shared<O>(scene.getFBOInput()->getColorTexture());
+
+    shared_ptr<A> a = make_shared<A>(program);
+
+    shared_ptr<Swap> s = make_shared<Swap>();
+
+    scene.addLink(a);
+    scene.addLink(object);
+    scene.addLink(object2);
+    scene.addLink(cube);
+    scene.addLink(s);
+    scene.addLink(o);
+
+    window.getCallback()->getWindowEvent()->addListener(&scene);
 
     while(!glfwWindowShouldClose(window.getWindow())) {
         glUseProgram(program->getProgram());
@@ -221,8 +271,8 @@ int main() {
 	camera.getView()->setRotation(glm::vec3(0, cos(theta*3.14f/180) * 45 + 180, 0));
 
 	//cube squash
-	cube.getModel()->setRotation(glm::vec3(0, theta, theta/2));
-	cube.getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
+	cube->getModel()->setRotation(glm::vec3(0, theta, theta/2));
+	cube->getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
 	
 	glm::mat4 view_matrix = camera.getView()->getMatrix();
 	glUniformMatrix4fv(view_matrix_uniform, 1, GL_FALSE, glm::value_ptr(view_matrix));
@@ -231,6 +281,7 @@ int main() {
 
 	glUniformMatrix4fv(projection_matrix_uniform, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
+/*
 	fbo.bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	object.render(param);
@@ -238,15 +289,15 @@ int main() {
 	cube.render(param);
 	fbo.unbind();
 
-	object.render(param);
+	//object.render(param);
 
-	object2.render(param);
+	//object2.render(param);
 
-	cube.render(param);
-	
-	glUseProgram(0);
+	//cube.render(param);
 
-	o.draw();
+	o.render(param);
+*/
+	scene.render();
 
 	glfwPollEvents();
 	glfwSwapBuffers(window.getWindow());

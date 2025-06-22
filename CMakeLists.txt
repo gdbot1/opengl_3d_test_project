@@ -47,6 +47,8 @@ add_executable(${project_name}
 
 	src/world/camera/Camera.cpp
 
+	src/world/scene/Scene.cpp
+
 	src/world/objects/Object.cpp
 	src/world/objects/Cube.cpp
 )
