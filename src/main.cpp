@@ -48,6 +48,8 @@
 
 #include "graphics/IRenderable.h"
 
+#include "world/scene/elements/Elements.h"
+
 using namespace std;
 
 class Swap : public IRenderable {
@@ -70,41 +72,6 @@ public:
     }
 private:
     shared_ptr<Program> program;
-};
-
-class O : public callback::WindowListener, public IRenderable {
-public:
-    O(shared_ptr<tex::Texture> texture) {
-	this->texture = texture;
-    }
-
-    void render(RenderParam &param) override {
-	param.fbo_input->unbind();
-
-	glUseProgram(0);
-	
-	cout << "tex " << texture->getWidth() << " " << texture->getHeight() << endl;
-	
-	//shared_ptr<tex::Texture> texture = param.fbo_input->getColorTexture();
-
-	texture->bind();
-
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(-aspect, -1);
-	glTexCoord2f(1, 0); glVertex2f(aspect, -1);
-	glTexCoord2f(1, 1); glVertex2f(aspect,  1);
-	glTexCoord2f(0, 1); glVertex2f(-aspect,  1);
-	glEnd();
-
-	texture->unbind();
-    }
-
-    void onFramebufferSizeEvent(callback::FramebufferSizeEvent &event) {
-	aspect = static_cast<float>(event.getWidth()) / static_cast<float>(event.getHeight());
-    }
-private:
-    shared_ptr<tex::Texture> texture;
-    float aspect = 1;
 };
 
 class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener {
@@ -169,18 +136,6 @@ int main() {
 
     Scene scene(1920, 1080);
 
-/*
-    shared_ptr<tex::Texture> normal_texture = make_shared<tex::Texture>(texture->getWidth(), texture->getHeight());
-    shared_ptr<tex::DepthTexture> depth_texture = make_shared<tex::DepthTexture>(texture->getWidth(), texture->getHeight());
-
-    FBO fbo;
-
-    fbo.bind();
-    fbo.linkTexture((*normal_texture), GL_COLOR_ATTACHMENT0, 0);
-    fbo.linkTexture((*depth_texture), GL_DEPTH_ATTACHMENT, 0);
-    fbo.unbind();
-*/
-
     cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << endl;
 
     //glUseProgram(program->getProgram());
@@ -224,7 +179,7 @@ int main() {
     shared_ptr<Object> object = make_shared<Object>(vao, texture);
 
     shared_ptr<Object> object2 = make_shared<Object>(vao, scene.getFBOOutput()->getColorTexture());
-    object2->getModel()->setPosition(glm::vec3(1, 1, 0.5f));
+    object2->getModel()->setPosition(glm::vec3(0.5f, 1, 1));
     object2->getModel()->setRotation(glm::vec3(-25, 45, 0));
 
     shared_ptr<Cube> cube = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
@@ -247,18 +202,14 @@ int main() {
 
     glClearColor(1, 1, 1, 1);
 
-    shared_ptr<O> o = make_shared<O>(scene.getFBOInput()->getColorTexture());
-
-    shared_ptr<A> a = make_shared<A>(program);
-
-    shared_ptr<Swap> s = make_shared<Swap>();
-
-    scene.addLink(a);
+    scene.addLink(make_shared<render::BindFBO>(scene.getFBOInput(), true));
+    scene.addLink(make_shared<A>(program));
     scene.addLink(object);
     scene.addLink(object2);
     scene.addLink(cube);
-    scene.addLink(s);
-    scene.addLink(o);
+    scene.addLink(make_shared<render::Swap>());
+    scene.addLink(make_shared<render::BindFBO>(scene.getFBOInput(), false));
+    scene.addLink(make_shared<render::Display>(scene.getFBOInput()->getColorTexture()));
 
     window.getCallback()->getWindowEvent()->addListener(&scene);
 
@@ -281,22 +232,6 @@ int main() {
 
 	glUniformMatrix4fv(projection_matrix_uniform, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
-/*
-	fbo.bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	object.render(param);
-	object2.render(param);
-	cube.render(param);
-	fbo.unbind();
-
-	//object.render(param);
-
-	//object2.render(param);
-
-	//cube.render(param);
-
-	o.render(param);
-*/
 	scene.render();
 
 	glfwPollEvents();

@@ -17,6 +17,7 @@ add_executable(${project_name}
 	src/graphics/gl_objects/buffers/Ebo.cpp
 	src/graphics/gl_objects/buffers/fbo/Fbo.cpp
 	src/graphics/gl_objects/buffers/fbo/LayerFbo.cpp
+	src/graphics/gl_objects/buffers/fbo/utils/FBOUtils.cpp
 
 	src/graphics/gl_objects/texture/Texture.cpp
 	src/graphics/gl_objects/texture/DepthTexture.cpp
@@ -34,7 +35,7 @@ add_executable(${project_name}
 
 	src/graphics/param/RenderParam.cpp
 
-	src/matrix/utils/MatrixUtils.cpp
+ 	src/matrix/utils/MatrixUtils.cpp
 
 	src/matrix/projection/ProjectionMatrix.cpp
 	src/matrix/projection/perspective/PerspectiveMatrix.cpp
@@ -48,6 +49,9 @@ add_executable(${project_name}
 	src/world/camera/Camera.cpp
 
 	src/world/scene/Scene.cpp
+	src/world/scene/elements/BindFBO.cpp
+	src/world/scene/elements/Swap.cpp
+	src/world/scene/elements/Display.cpp
 
 	src/world/objects/Object.cpp
 	src/world/objects/Cube.cpp

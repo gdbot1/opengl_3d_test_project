@@ -27,11 +27,11 @@ GLuint FBO::createFBO() {
 }
 
 void FBO::bind() {
-    glBindFramebuffer(target, this->fbo);
+    FBOUtils::bind(target, fbo);
 }
 
 void FBO::unbind() {
-    glBindFramebuffer(target, 0);
+    FBOUtils::unbind(target);
 }
 
 GLuint FBO::getFBO() const {

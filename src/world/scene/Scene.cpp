@@ -21,17 +21,15 @@ void Scene::render() {
 
     param.setProgram(nullptr).setAspect(aspect).setFBOInput(fbo_input).setFBOOutput(fbo_output);
 
-    fbo_input->bind();
-
     for (int i = 0; i < this->pipeline.size(); i++) {
 	if (!pipeline[i]) {
+	    pipeline.erase(pipeline.begin() + i);
+	    i--;
 	    continue;
 	}
 
 	pipeline[i]->render(param);
     }
-
-    fbo_input->unbind();
 }
 
 void Scene::addLink(shared_ptr<IRenderable> renderable) {

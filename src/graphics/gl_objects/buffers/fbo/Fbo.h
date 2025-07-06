@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 
 #include "graphics/gl_objects/texture/Texture.h"
+#include "utils/FBOUtils.h"
 
 class FBO {
 public:
