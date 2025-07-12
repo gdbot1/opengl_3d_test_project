@@ -4,6 +4,9 @@ set(project_name "3d_opengl_cpp_test")
 
 project(${project_name})
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 add_executable(${project_name}
 	src/Main.cpp
 
@@ -47,6 +50,12 @@ add_executable(${project_name}
 	src/matrix/transform/ModelMatrix.cpp
 
 	src/world/camera/Camera.cpp
+
+	src/utils/file/File.cpp
+	src/utils/file/files/Folder.cpp
+
+	src/engine/controller/Controller.cpp
+	src/engine/controller/controllers/TestController.cpp
 
 	src/world/scene/Scene.cpp
 	src/world/scene/elements/BindFBO.cpp

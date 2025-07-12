@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <any>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -50,6 +51,9 @@
 
 #include "world/scene/elements/Elements.h"
 
+#include "utils/file/File.h"
+#include "utils/file/files/Folder.h"
+
 using namespace std;
 
 class Swap : public IRenderable {
@@ -90,7 +94,72 @@ public:
     }
 };
 
+class Test {
+public:
+    Test(string s) {
+	this->s = s;
+    }   
+
+    void print() {
+	cout << s << endl;
+    }
+private:
+    string s;
+};
+
+void readFolder(shared_ptr<fls::Folder> folder, const string space) {
+    vector<shared_ptr<fls::File>> files = folder->getFiles();
+
+    for (int i = 0; i < files.size(); i++) {
+	shared_ptr<fls::File> file = files[i];
+
+	cout << space << " - " << "filename: " << file->getName() << endl;
+
+	if (file->getType() == fls::Type::Folder) {
+	    cout << space << "      " << "/\\ is folder" << endl;
+
+	    readFolder(dynamic_pointer_cast<fls::Folder>(file), space + "    ");
+	}
+    }
+}
+
+class MyFolder : public fls::Folder {
+public:
+    MyFolder(const string &name) : fls::Folder(name) {}
+
+    vector<shared_ptr<fls::File>> getFiles() const override {
+	cout << "myFolder" << endl;
+
+	return this->files;
+    }
+};
+
 int main() {
+    shared_ptr<fls::Folder> folder = make_shared<fls::Folder>("folder"), folder2 = make_shared<MyFolder>("folder2"), folder3 = make_shared<fls::Folder>("folder3");
+
+    shared_ptr<fls::File> file1 = make_shared<fls::File>("file", fls::Type::File);
+    shared_ptr<fls::File> file2 = make_shared<fls::File>("file2", fls::Type::File);
+    shared_ptr<fls::File> file3 = make_shared<fls::File>("file3", fls::Type::File);
+    shared_ptr<fls::File> file4 = make_shared<fls::File>("file4", fls::Type::File);
+    shared_ptr<fls::File> file5 = make_shared<fls::File>("file5", fls::Type::File);
+    shared_ptr<fls::File> file6 = make_shared<fls::File>("file6", fls::Type::File);
+
+    folder->add(file1);
+    folder->add(file2);
+    folder->add(folder2);
+    folder2->add(file3);
+    folder2->add(folder3);
+    folder3->add(file6);
+    folder2->add(file4);
+    folder->add(file5);
+
+    readFolder(folder, "");
+    
+    shared_ptr<fls::Folder> some_folder = folder->getAs<fls::Folder>("folder2");
+    
+    cout << "takes file is: " << (some_folder == nullptr ? "nullptr" : some_folder->getName()) << endl;
+    some_folder->getFiles();
+
     if (!glfwInit()) {
 	cerr << "FATAL ERROR: glfw can't be inited" << endl;
 	return -1;
