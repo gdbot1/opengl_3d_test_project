@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 template<typename L>
 class Dispatcher {
@@ -9,11 +10,11 @@ public:
 
     ~Dispatcher() = default;
 
-    void addListener(L* l) {
+    void addListener(std::shared_ptr<L> l) {
 	listeners.push_back(l);
     }
 
-    L* getListener(int i) const {
+    std::shared_ptr<L> getListener(int i) const {
 	if (i < 0 || i >= listeners.size()) {
 	    throw runtime_error("DISPATCER ERROR: At 'getListener(int i)': Index i out of ranges of listeners list'");	
 	}
@@ -29,9 +30,9 @@ public:
 	listeners.erase(listeners.begin() + i);
     }
 
-    void removeListener(L* l) {
+    void removeListener(std::shared_ptr<L> l) {
 	listeners.erase(std::remove(listeners.begin(), listeners.end(), l), listeners.end());
     }
 protected:
-    std::vector<L*> listeners;
+    std::vector<std::shared_ptr<L>> listeners;
 };

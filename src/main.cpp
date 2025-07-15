@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <any>
+#include <thread>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -54,6 +55,12 @@
 #include "utils/file/File.h"
 #include "utils/file/files/Folder.h"
 
+#include "utils/time/TimeUtils.h"
+
+#include "events/update/UpdateDispatcher.h"
+#include "events/update/listeners/DynamicUpdatable.h"
+#include "engine/update/Updater.h"
+
 using namespace std;
 
 class Swap : public IRenderable {
@@ -78,7 +85,7 @@ private:
     shared_ptr<Program> program;
 };
 
-class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener {
+class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener, public DynamicUpdatable {
 public:
     void onKeyEvent(callback::KeyEvent &event) override {
 	cout << "KeyEvent: " << event.getKey() << " " << event.getAction() << endl;
@@ -91,6 +98,11 @@ public:
     void onFramebufferSizeEvent(callback::FramebufferSizeEvent &event) {
 	cout << "WindowEvent: " << event.getWidth() << " " << event.getHeight() << endl;
 	glViewport(0, 0, event.getWidth(), event.getHeight());
+    }
+
+    void onUpdate(float delta_time) {
+	cout << "Update: " << delta_time << endl;
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 };
 
@@ -167,13 +179,21 @@ int main() {
     
     gr::Window window(500, 500, "OpenGL Project");
 
-    L l;
+    shared_ptr<L> l = make_shared<L>();
 
     window.createCallback();
 
-    window.getCallback()->getKeyEvent()->addListener(&l);
-    window.getCallback()->getMouseEvent()->addListener(&l);
-    window.getCallback()->getWindowEvent()->addListener(&l);
+    window.getCallback()->getKeyEvent()->addListener(l);
+    window.getCallback()->getMouseEvent()->addListener(l);
+    window.getCallback()->getWindowEvent()->addListener(l);
+
+    Updater updater(20);
+
+    updater.addListener(l);
+
+    thread updater_thread([&updater]() {
+        updater.start();
+    });
 
     if (!gladLoadGL()) {
 	cerr << "FATAL ERROR: glad can't be inited" << endl;
@@ -203,7 +223,7 @@ int main() {
 
     cout << "layer FBO: " << fbo.getWidth() << " " << fbo.getHeight() << " created" << endl; 
 
-    Scene scene(1920, 1080);
+    shared_ptr<Scene> scene = make_shared<Scene>(1920, 1080);
 
     cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << endl;
 
@@ -247,7 +267,7 @@ int main() {
 
     shared_ptr<Object> object = make_shared<Object>(vao, texture);
 
-    shared_ptr<Object> object2 = make_shared<Object>(vao, scene.getFBOOutput()->getColorTexture());
+    shared_ptr<Object> object2 = make_shared<Object>(vao, scene->getFBOOutput()->getColorTexture());
     object2->getModel()->setPosition(glm::vec3(0.5f, 1, 1));
     object2->getModel()->setRotation(glm::vec3(-25, 45, 0));
 
@@ -261,7 +281,7 @@ int main() {
     
     shared_ptr<mtrx::PerspectiveWindowMatrix> projection_matrix = make_shared<mtrx::PerspectiveWindowMatrix>(90, 1, 0.1f, 100);
     
-    window.getCallback()->getWindowEvent()->addListener(&(*projection_matrix));
+    window.getCallback()->getWindowEvent()->addListener(projection_matrix);
 
     Camera camera(pos, rot, scal, projection_matrix);
 
@@ -271,16 +291,16 @@ int main() {
 
     glClearColor(1, 1, 1, 1);
 
-    scene.addLink(make_shared<render::BindFBO>(scene.getFBOInput(), true));
-    scene.addLink(make_shared<A>(program));
-    scene.addLink(object);
-    scene.addLink(object2);
-    scene.addLink(cube);
-    scene.addLink(make_shared<render::Swap>());
-    scene.addLink(make_shared<render::BindFBO>(scene.getFBOInput(), false));
-    scene.addLink(make_shared<render::Display>(scene.getFBOInput()->getColorTexture()));
+    scene->addLink(make_shared<render::BindFBO>(scene->getFBOInput(), true));
+    scene->addLink(make_shared<A>(program));
+    scene->addLink(object);
+    scene->addLink(object2);
+    scene->addLink(cube);
+    scene->addLink(make_shared<render::Swap>());
+    scene->addLink(make_shared<render::BindFBO>(scene->getFBOInput(), false));
+    scene->addLink(make_shared<render::Display>(scene->getFBOInput()->getColorTexture()));
 
-    window.getCallback()->getWindowEvent()->addListener(&scene);
+    window.getCallback()->getWindowEvent()->addListener(scene);
 
     while(!glfwWindowShouldClose(window.getWindow())) {
         glUseProgram(program->getProgram());
@@ -301,11 +321,15 @@ int main() {
 
 	glUniformMatrix4fv(projection_matrix_uniform, 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
-	scene.render();
+	scene->render();
 
 	glfwPollEvents();
 	glfwSwapBuffers(window.getWindow());
     }
+
+    updater.stop();
+
+    updater_thread.join();
 
     glfwTerminate();
 

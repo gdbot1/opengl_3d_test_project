@@ -51,11 +51,20 @@ add_executable(${project_name}
 
 	src/world/camera/Camera.cpp
 
+	src/events/update/UpdateDispatcher.cpp
+	src/events/update/context/UpdateContext.cpp
+	src/events/update/listeners/Updatable.cpp
+	src/events/update/listeners/DynamicUpdatable.cpp
+
 	src/utils/file/File.cpp
 	src/utils/file/files/Folder.cpp
 
+	src/utils/time/Timer.cpp
+
 	src/engine/controller/Controller.cpp
 	src/engine/controller/controllers/TestController.cpp
+
+	src/engine/update/Updater.cpp
 
 	src/world/scene/Scene.cpp
 	src/world/scene/elements/BindFBO.cpp
