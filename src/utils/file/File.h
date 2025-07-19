@@ -2,22 +2,28 @@
 
 #include <string>
 
-#include "type/Type.h"
+#include "IFile.h"
+#include "files/IFolder.h"
 
 namespace fls {
 
-class File {
+class File : public virtual fls::IFile {
 public:
     File(const std::string &name, fls::Type type);
 
     virtual ~File();
 
-    virtual std::string getName() const;
+    virtual std::string getName() const override;
 
-    virtual fls::Type getType() const;
+    virtual fls::Type getType() const override;
+
+    virtual void setParent(std::shared_ptr<fls::IFile> parent) override;
+
+    virtual std::shared_ptr<fls::IFile> getParent() const override;
 private:
     std::string name;
     fls::Type type;
+    std::shared_ptr<fls::IFolder> parent;
 };
 
 }

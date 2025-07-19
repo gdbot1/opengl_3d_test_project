@@ -6,46 +6,30 @@
 #include <stdexcept>
 
 #include "utils/file/File.h"
+#include "IFolder.h"
 
 //fls - FiLe System
 
 namespace fls {
 
-class Folder : public File {
+class Folder : public fls::File, public fls::IFolder {
 public:
     Folder(const std::string &name);
 
     virtual ~Folder();
 
-    virtual void add(std::shared_ptr<fls::File> file);
+    virtual void add(std::shared_ptr<fls::IFile> file) override;
 
-    virtual void remove(const std::string &name);
+    virtual void remove(const std::string &name) override;
 
-    virtual std::shared_ptr<fls::File> get(const std::string &name) const;
+    virtual std::shared_ptr<fls::IFile> get(const std::string &name) const override;
 
-    template<typename T>
-    std::shared_ptr<T> getAs(const std::string &name) const {
-	//auto obj = std::dynamic_pointer_cast<T>(this->get(name));
-	
-	return std::dynamic_pointer_cast<T>(this->get(name));
+    virtual bool contains(const std::string &name) const override;
 
-	/*
-	if (obj != nullptr) {
-	    return obj;
-	}
-	else {
-	    return nullptr;
-	    //throw std::runtime_error("FOLDER ERROR: get(name) error: tried to take other types of objects");
-	}
-	*/
-    }
-
-    virtual bool contains(const std::string &name) const;
-
-    virtual std::vector<std::shared_ptr<fls::File>> getFiles() const;
+    virtual std::vector<std::shared_ptr<fls::IFile>> getFiles() const override;
 protected:
-    std::unordered_map<std::string, std::shared_ptr<fls::File>> file_table;
-    std::vector<std::shared_ptr<fls::File>> files;
+    std::unordered_map<std::string, std::shared_ptr<fls::IFile>> file_table;
+    std::vector<std::shared_ptr<fls::IFile>> files;
 };
 
 }
