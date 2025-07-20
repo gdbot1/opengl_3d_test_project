@@ -58,6 +58,7 @@ add_executable(${project_name}
 
 	src/utils/file/File.cpp
 	src/utils/file/files/Folder.cpp
+	src/utils/file/utils/FileUtils.cpp
 
 	src/utils/time/Timer.cpp
 

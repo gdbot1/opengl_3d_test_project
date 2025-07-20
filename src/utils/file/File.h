@@ -1,13 +1,14 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "IFile.h"
 #include "files/IFolder.h"
 
 namespace fls {
 
-class File : public virtual fls::IFile {
+class File : public virtual fls::IFile, public std::enable_shared_from_this<fls::File> {
 public:
     File(const std::string &name, fls::Type type);
 

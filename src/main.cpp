@@ -54,6 +54,7 @@
 
 #include "utils/file/File.h"
 #include "utils/file/files/Folder.h"
+#include "utils/file/utils/FileUtils.h"
 
 #include "utils/time/TimeUtils.h"
 
@@ -149,7 +150,7 @@ public:
 int main() {
     shared_ptr<fls::IFolder> folder = make_shared<fls::Folder>("folder"), folder2 = make_shared<MyFolder>("folder2"), folder3 = make_shared<fls::Folder>("folder3");
 
-    shared_ptr<fls::File> file1 = make_shared<fls::File>("file", fls::Type::File);
+    shared_ptr<fls::File> file1 = make_shared<fls::File>("file1", fls::Type::File);
     shared_ptr<fls::File> file2 = make_shared<fls::File>("file2", fls::Type::File);
     shared_ptr<fls::File> file3 = make_shared<fls::File>("file3", fls::Type::File);
     shared_ptr<fls::File> file4 = make_shared<fls::File>("file4", fls::Type::File);
@@ -157,7 +158,6 @@ int main() {
     shared_ptr<fls::File> file6 = make_shared<fls::File>("file6", fls::Type::File);
 
     folder->add(file1);
-    file1->setParent(folder);
     folder->add(file2);
     folder->add(folder2);
     folder2->add(file3);
@@ -165,22 +165,26 @@ int main() {
     folder3->add(file6);
     folder2->add(file4);
     folder->add(file5);
-
-    file1->setParent(folder2);
-    folder2->add(file1);
-
-    folder2->setParent(folder);
-    file6->setParent(folder2);
     
-    shared_ptr<fls::IFolder> folder2_s = dynamic_pointer_cast<fls::IFolder>(file6->getParent());
+    shared_ptr<fls::IFolder> folder3_s = dynamic_pointer_cast<fls::IFolder>(file6->getParent());
+    shared_ptr<fls::IFolder> folder2_s = dynamic_pointer_cast<fls::IFolder>(folder3_s->getParent());
     shared_ptr<fls::IFolder> folder_s = dynamic_pointer_cast<fls::IFolder>(folder2_s->getParent());
 
+    //file1->setParent(folder2);
+    folder2->add(file1);
+
     readFolder(folder_s, "");
+
+    cout << "folder3: " << folder2->getAs<fls::IFolder>("folder3")->getName() << endl;
     
-    //shared_ptr<fls::Folder> some_folder = folder->getAs<fls::Folder>("folder2");
+    shared_ptr<fls::IFile> some_folder = folder->getAs<fls::IFile>("file1");
     
-    //cout << "takes file is: " << (some_folder == nullptr ? "nullptr" : some_folder->getName()) << endl;
+    cout << "takes file is: " << (some_folder == nullptr ? "nullptr" : some_folder->getName()) << endl;
     //some_folder->getFiles();
+
+    shared_ptr<fls::IFile> my_file = fls::get("folder2/folder3/../../folder2/file3/../file1", std::dynamic_pointer_cast<fls::IFile>(folder));
+
+    cout << "MY_FILE: " << (my_file ? my_file->getName() : "nullptr") << endl;
 
     if (!glfwInit()) {
 	cerr << "FATAL ERROR: glfw can't be inited" << endl;
