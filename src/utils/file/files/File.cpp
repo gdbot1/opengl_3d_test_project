@@ -1,7 +1,7 @@
 #include "File.h"
 
 fls::File::File(const std::string &name, fls::Type type) : name(name), type(type) {
-    this->parent = nullptr;
+    this->parent.reset();
 }
 
 fls::File::~File() {}
@@ -17,13 +17,20 @@ fls::Type fls::File::getType() const {
 void fls::File::setParent(std::shared_ptr<fls::IFile> parent) {
     std::shared_ptr<fls::IFolder> folder = std::dynamic_pointer_cast<fls::IFolder>(parent);
 
-    if (this->parent) {
-	this->parent->remove(this->getName());//удаление из предыдущего места хранения (что-бы избежать дублирования)
+    std::shared_ptr<fls::IFolder> folder_parent = this->parent.lock();
+
+    if (folder_parent) {
+	folder_parent->remove(this->getName());//удаление из предыдущего места хранения (что-бы избежать дублирования)
     }
 
-    this->parent = folder;
+    if (folder) {
+	this->parent = folder;
+    }
+    else {
+	this->parent.reset();
+    }
 }
 
 std::shared_ptr<fls::IFile> fls::File::getParent() const {
-    return this->parent;
+    return this->parent.lock();
 }

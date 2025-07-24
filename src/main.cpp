@@ -52,15 +52,17 @@
 
 #include "world/scene/elements/Elements.h"
 
-#include "utils/file/File.h"
-#include "utils/file/files/Folder.h"
+#include "utils/file/files/File.h"
+#include "utils/file/files/folders/Folder.h"
 #include "utils/file/utils/FileUtils.h"
 
 #include "utils/time/TimeUtils.h"
 
 #include "events/update/UpdateDispatcher.h"
 #include "events/update/listeners/DynamicUpdatable.h"
+
 #include "engine/update/Updater.h"
+#include "engine/controller/controllers/TestController.h"
 
 using namespace std;
 
@@ -148,6 +150,8 @@ public:
 };
 
 int main() {
+    shared_ptr<TestController> controller = make_shared<TestController>("TestController");
+
     shared_ptr<fls::IFolder> folder = make_shared<fls::Folder>("folder"), folder2 = make_shared<MyFolder>("folder2"), folder3 = make_shared<fls::Folder>("folder3");
 
     shared_ptr<fls::File> file1 = make_shared<fls::File>("file1", fls::Type::File);
@@ -163,6 +167,7 @@ int main() {
     folder2->add(file3);
     folder2->add(folder3);
     folder3->add(file6);
+    folder3->add(controller);
     folder2->add(file4);
     folder->add(file5);
     
@@ -175,12 +180,8 @@ int main() {
 
     readFolder(folder_s, "");
 
-    cout << "folder3: " << folder2->getAs<fls::IFolder>("folder3")->getName() << endl;
-    
-    shared_ptr<fls::IFile> some_folder = folder->getAs<fls::IFile>("file1");
-    
-    cout << "takes file is: " << (some_folder == nullptr ? "nullptr" : some_folder->getName()) << endl;
-    //some_folder->getFiles();
+    controller->setRoot(folder);
+    controller->run();
 
     shared_ptr<fls::IFile> my_file = fls::get("folder2/folder3/../../folder2/file3/../file1", std::dynamic_pointer_cast<fls::IFile>(folder));
 

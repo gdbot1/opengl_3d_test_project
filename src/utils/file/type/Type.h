@@ -4,7 +4,8 @@ namespace fls {
 
 enum class  Type {
     File,
-    Folder
+    Folder,
+    Controller
 };
 
 }

@@ -56,13 +56,14 @@ add_executable(${project_name}
 	src/events/update/listeners/Updatable.cpp
 	src/events/update/listeners/DynamicUpdatable.cpp
 
-	src/utils/file/File.cpp
-	src/utils/file/files/Folder.cpp
+	src/utils/file/files/File.cpp
+	src/utils/file/files/folders/Folder.cpp
+	src/utils/file/files/folders/RootFolder.cpp
 	src/utils/file/utils/FileUtils.cpp
 
 	src/utils/time/Timer.cpp
 
-	src/engine/controller/Controller.cpp
+	src/engine/controller/controllers/Controller.cpp
 	src/engine/controller/controllers/TestController.cpp
 
 	src/engine/update/Updater.cpp

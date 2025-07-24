@@ -3,8 +3,8 @@
 #include <string>
 #include <memory>
 
-#include "IFile.h"
-#include "files/IFolder.h"
+#include "utils/file/IFile.h"
+#include "utils/file/files/IFolder.h"
 
 namespace fls {
 
@@ -24,7 +24,7 @@ public:
 private:
     std::string name;
     fls::Type type;
-    std::shared_ptr<fls::IFolder> parent;
+    std::weak_ptr<fls::IFolder> parent;
 };
 
 }

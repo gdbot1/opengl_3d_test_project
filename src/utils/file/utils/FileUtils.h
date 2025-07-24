@@ -22,4 +22,9 @@ std::shared_ptr<std::vector<std::string>> separate_path(const std::string &path)
 //путь root/game/folder/file1 рабиваетсья на набор запросов, и все под пути (root, game и folder) - это папки.
 std::shared_ptr<fls::IFile> get(const std::string &path, std::shared_ptr<fls::IFile> &file);
 
+template<typename T>
+std::shared_ptr<T> getAs(const std::string &path, std::shared_ptr<fls::IFile> &file) {
+    return std::dynamic_pointer_cast<T>(fls::get(path, file));
+}
+
 }

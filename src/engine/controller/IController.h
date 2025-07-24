@@ -1,8 +1,8 @@
 #pragma once
 
-class IController {
+#include "utils/file/IFile.h"
+
+class IController : virtual public fls::IFile {
 public:
     virtual void run() = 0;
-
-    virtual void update() = 0;
 };
