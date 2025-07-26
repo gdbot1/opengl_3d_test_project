@@ -55,3 +55,49 @@ std::shared_ptr<fls::IFile> fls::get(const std::string &path, std::shared_ptr<fl
 
     return lp_path == ".." ? c_file->getParent() : cast_folder(c_file)->get(lp_path);
 }
+
+void fls::run(std::shared_ptr<fls::IFolder> root, fls::FileListener &listener) {
+    std::stack<std::pair<std::shared_ptr<fls::IFolder>, int>> stack;
+
+    std::shared_ptr<fls::IFolder> cursor = root;
+
+    int id = 0;
+
+    do {
+	std::vector<std::shared_ptr<fls::IFile>> files = cursor->getFiles();
+	
+	bool containsFolder = true;
+
+	for (int i = id; i < files.size(); i++) {
+	    std::shared_ptr<fls::IFile> current = files[i];
+
+	    listener.onFile(current, stack);
+
+	    if (current->getType() == fls::Type::Folder) {
+		std::shared_ptr<fls::IFolder> folder = fls::cast<fls::IFile, fls::IFolder>(current);
+
+		if (folder) {
+		    stack.push({cursor, i + 1});
+
+		    cursor = folder;
+		    id = 0;
+
+		    containsFolder = false;//папка была найдена, и не надо возвращаться назад по дереву
+
+		    break;
+		}
+	    }
+	}
+	
+	if (stack.size() != 0) {
+	    if (containsFolder) {
+		cursor = stack.top().first;
+		id = stack.top().second;
+		stack.pop();
+	    }
+	}
+	else {
+	    break;
+	}
+    } while (true);
+}

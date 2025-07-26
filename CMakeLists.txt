@@ -63,6 +63,8 @@ add_executable(${project_name}
 
 	src/utils/time/Timer.cpp
 
+	src/engine/Engine.cpp
+
 	src/engine/controller/controllers/Controller.cpp
 	src/engine/controller/controllers/TestController.cpp
 

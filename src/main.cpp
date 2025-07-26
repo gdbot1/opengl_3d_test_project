@@ -55,12 +55,14 @@
 #include "utils/file/files/File.h"
 #include "utils/file/files/folders/Folder.h"
 #include "utils/file/utils/FileUtils.h"
+#include "utils/file/utils/FileListener.h"
 
 #include "utils/time/TimeUtils.h"
 
 #include "events/update/UpdateDispatcher.h"
 #include "events/update/listeners/DynamicUpdatable.h"
 
+#include "engine/Engine.h"
 #include "engine/update/Updater.h"
 #include "engine/controller/controllers/TestController.h"
 
@@ -88,7 +90,7 @@ private:
     shared_ptr<Program> program;
 };
 
-class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener, public DynamicUpdatable {
+class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener, public DynamicUpdatable, public fls::FileListener {
 public:
     void onKeyEvent(callback::KeyEvent &event) override {
 	cout << "KeyEvent: " << event.getKey() << " " << event.getAction() << endl;
@@ -106,6 +108,10 @@ public:
     void onUpdate(float delta_time) {
 	cout << "Update: " << delta_time << endl;
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+
+    void onFile(std::shared_ptr<fls::IFile> file, std::stack<std::pair<std::shared_ptr<fls::IFolder>, int>> stack) {
+	cout << "FILE <<<<<< " << file->getName() << endl;
     }
 };
 
@@ -150,9 +156,12 @@ public:
 };
 
 int main() {
-    shared_ptr<TestController> controller = make_shared<TestController>("TestController");
+    //инициализация
+    Engine engine("root");
 
-    shared_ptr<fls::IFolder> folder = make_shared<fls::Folder>("folder"), folder2 = make_shared<MyFolder>("folder2"), folder3 = make_shared<fls::Folder>("folder3");
+    shared_ptr<fls::IFolder> folder = engine.getRoot(), folder2 = make_shared<MyFolder>("folder2"), folder3 = make_shared<fls::Folder>("folder3"), folder4 = make_shared<fls::Folder>("folder4");
+
+    shared_ptr<TestController> controller = make_shared<TestController>("TestController");
 
     shared_ptr<fls::File> file1 = make_shared<fls::File>("file1", fls::Type::File);
     shared_ptr<fls::File> file2 = make_shared<fls::File>("file2", fls::Type::File);
@@ -160,17 +169,34 @@ int main() {
     shared_ptr<fls::File> file4 = make_shared<fls::File>("file4", fls::Type::File);
     shared_ptr<fls::File> file5 = make_shared<fls::File>("file5", fls::Type::File);
     shared_ptr<fls::File> file6 = make_shared<fls::File>("file6", fls::Type::File);
+    shared_ptr<fls::File> file7 = make_shared<fls::File>("file7", fls::Type::File);
+    shared_ptr<fls::File> file8 = make_shared<fls::File>("file8", fls::Type::File);
 
+    //установка файловой системы
     folder->add(file1);
     folder->add(file2);
     folder->add(folder2);
+
     folder2->add(file3);
     folder2->add(folder3);
+
     folder3->add(file6);
     folder3->add(controller);
+
     folder2->add(file4);
+    folder2->add(folder4);
+
     folder->add(file5);
+
+    folder4->add(file7);
+    folder4->add(file8);
     
+    //установка контроллеров
+    engine.reg(*controller);
+
+    //запуск контроллеров
+    engine.run();
+
     shared_ptr<fls::IFolder> folder3_s = dynamic_pointer_cast<fls::IFolder>(file6->getParent());
     shared_ptr<fls::IFolder> folder2_s = dynamic_pointer_cast<fls::IFolder>(folder3_s->getParent());
     shared_ptr<fls::IFolder> folder_s = dynamic_pointer_cast<fls::IFolder>(folder2_s->getParent());
@@ -180,8 +206,8 @@ int main() {
 
     readFolder(folder_s, "");
 
-    controller->setRoot(folder);
-    controller->run();
+    //controller->setRoot(folder);
+    //controller->run();
 
     shared_ptr<fls::IFile> my_file = fls::get("folder2/folder3/../../folder2/file3/../file1", std::dynamic_pointer_cast<fls::IFile>(folder));
 
@@ -191,10 +217,10 @@ int main() {
 	cerr << "FATAL ERROR: glfw can't be inited" << endl;
 	return -1;
     }
-    
-    gr::Window window(500, 500, "OpenGL Project");
 
     shared_ptr<L> l = make_shared<L>();
+    
+    gr::Window window(500, 500, "OpenGL Project");
 
     window.createCallback();
 

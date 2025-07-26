@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream>
 
+#include "FileListener.h"
+
 #include "utils/file/IFile.h"
 #include "utils/file/files/IFolder.h"
 
@@ -26,5 +28,7 @@ template<typename T>
 std::shared_ptr<T> getAs(const std::string &path, std::shared_ptr<fls::IFile> &file) {
     return std::dynamic_pointer_cast<T>(fls::get(path, file));
 }
+
+void run(std::shared_ptr<fls::IFolder> root, fls::FileListener &listener);
 
 }
