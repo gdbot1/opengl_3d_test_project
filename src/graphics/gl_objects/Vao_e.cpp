@@ -32,11 +32,11 @@ const shared_ptr<EBO> VAO_E::getEBO() {
 }
 
 void VAO_E::render(RenderParam &param) {
-    glBindVertexArray(vao);
+    bind();
 
     glDrawElements(GL_TRIANGLES, this->length, GL_UNSIGNED_INT, 0);
 
-    glBindVertexArray(0);
+    unbind();
 }
 
 VAO::VAO() {}

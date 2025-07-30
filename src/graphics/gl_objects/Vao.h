@@ -5,19 +5,24 @@
 
 #include <glad/glad.h>
 
-#include "../IRenderable.h"
+#include "utils/IBindable.h"
+#include "graphics/IRenderable.h"
 
 #include "buffers/Vbo.h"
 
 using namespace std;
 
-class VAO : public IRenderable {
+class VAO : public IRenderable, public IBindable {
 public:
     VAO(vector<shared_ptr<VBO>> &vbos, int length);
     
     ~VAO();
 
     virtual GLuint createVAO(vector<shared_ptr<VBO>> &vbos);
+
+    void bind() override;
+
+    void unbind() override;
 
     virtual GLuint getVAO();
 

@@ -25,6 +25,14 @@ GLuint VAO::createVAO(vector<shared_ptr<VBO>> &vbos) {
     return vao;
 }
 
+void VAO::bind() {
+    glBindVertexArray(vao);
+}
+
+void VAO::unbind() {
+    glBindVertexArray(0);
+}
+
 GLuint VAO::getVAO() {
     return this->vao;
 }
@@ -38,11 +46,11 @@ vector<shared_ptr<VBO>>& VAO::getVBOs() {
 }
 
 void VAO::render(RenderParam &param) {
-    glBindVertexArray(vao);
+    bind();
 
     glDrawArrays(GL_TRIANGLES, 0, length);
 
-    glBindVertexArray(0);
+    unbind();
 }
 
 void VAO::destroy() {

@@ -7,6 +7,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "graphics/utils/GLUtils.h"
+
 #include "shader/Shader.h"
 #include "shader/Program.h"
 
@@ -53,6 +55,7 @@
 #include "world/scene/elements/Elements.h"
 
 #include "utils/file/files/File.h"
+#include "utils/file/files/Any.h"
 #include "utils/file/files/folders/Folder.h"
 #include "utils/file/utils/FileUtils.h"
 #include "utils/file/utils/FileListener.h"
@@ -65,8 +68,20 @@
 #include "engine/Engine.h"
 #include "engine/update/Updater.h"
 #include "engine/controller/controllers/TestController.h"
+#include "engine/sample/samples/TestSample.h"
 
 using namespace std;
+
+class Print {
+public:
+    Print() = default;
+
+    virtual ~Print() = default;
+
+    void foo() {
+	cout << "Output from Pring class" << endl;
+    }
+};
 
 class Swap : public IRenderable {
 public:
@@ -156,8 +171,11 @@ public:
 };
 
 int main() {
+/*
     //инициализация
     Engine engine("root");
+
+    shared_ptr<fls::Any<Print>> print_object = make_shared<fls::Any<Print>>(make_shared<Print>(), "print");
 
     shared_ptr<fls::IFolder> folder = engine.getRoot(), folder2 = make_shared<MyFolder>("folder2"), folder3 = make_shared<fls::Folder>("folder3"), folder4 = make_shared<fls::Folder>("folder4");
 
@@ -189,6 +207,7 @@ int main() {
     folder->add(file5);
 
     folder4->add(file7);
+    folder4->add(print_object);
     folder4->add(file8);
     
     //установка контроллеров
@@ -211,22 +230,29 @@ int main() {
 
     shared_ptr<fls::IFile> my_file = fls::get("folder2/folder3/../../folder2/file3/../file1", std::dynamic_pointer_cast<fls::IFile>(folder));
 
-    cout << "MY_FILE: " << (my_file ? my_file->getName() : "nullptr") << endl;
+    //
+    fls::getAs<fls::Any<Print>>("folder2/folder4/print", fls::cast<fls::IFolder, fls::IFile>(folder))->get()->foo();
+    //
 
-    if (!glfwInit()) {
-	cerr << "FATAL ERROR: glfw can't be inited" << endl;
-	return -1;
+    cout << "MY_FILE: " << (my_file ? my_file->getName() : "nullptr") << endl;
+*/
+
+    try {
+	gl::glfwInit();
+    }
+    catch (const runtime_error &e) {
+	cout << e.what() << endl;
     }
 
     shared_ptr<L> l = make_shared<L>();
     
-    gr::Window window(500, 500, "OpenGL Project");
+    shared_ptr<gr::Window> window = make_shared<gr::Window>(500, 500, "OpenGL Project");
 
-    window.createCallback();
+    window->createCallback();
 
-    window.getCallback()->getKeyEvent()->addListener(l);
-    window.getCallback()->getMouseEvent()->addListener(l);
-    window.getCallback()->getWindowEvent()->addListener(l);
+    window->getCallback()->getKeyEvent()->addListener(l);
+    window->getCallback()->getMouseEvent()->addListener(l);
+    window->getCallback()->getWindowEvent()->addListener(l);
 
     Updater updater(20);
 
@@ -236,10 +262,11 @@ int main() {
         updater.start();
     });
 
-    if (!gladLoadGL()) {
-	cerr << "FATAL ERROR: glad can't be inited" << endl;
-	glfwTerminate();
-	return -1;
+    try {
+	gl::glInit();
+    }
+    catch (const runtime_error &e) {
+	cout << e.what() << endl;
     }
 
     //Enable
@@ -265,6 +292,24 @@ int main() {
     cout << "layer FBO: " << fbo.getWidth() << " " << fbo.getHeight() << " created" << endl; 
 
     shared_ptr<Scene> scene = make_shared<Scene>(1920, 1080);
+
+    ////////test
+    TestSample sample(window, scene);
+
+    shared_ptr<fls::IFolder> root = sample.getRoot();
+
+    Engine engine(root);
+
+    shared_ptr<TestController> controller = make_shared<TestController>("TestController");
+
+    engine.getRoot()->getAs<fls::IFolder>("engine")->add(controller);
+
+    engine.reg(*controller);
+
+    engine.run();
+
+    readFolder(engine.getRoot(), "");
+    //////////
 
     cout << "texture loaded: w: " << texture->getWidth() << " h: " << texture->getHeight() << " t: " << endl;
 
@@ -322,7 +367,7 @@ int main() {
     
     shared_ptr<mtrx::PerspectiveWindowMatrix> projection_matrix = make_shared<mtrx::PerspectiveWindowMatrix>(90, 1, 0.1f, 100);
     
-    window.getCallback()->getWindowEvent()->addListener(projection_matrix);
+    window->getCallback()->getWindowEvent()->addListener(projection_matrix);
 
     Camera camera(pos, rot, scal, projection_matrix);
 
@@ -341,9 +386,9 @@ int main() {
     scene->addLink(make_shared<render::BindFBO>(scene->getFBOInput(), false));
     scene->addLink(make_shared<render::Display>(scene->getFBOInput()->getColorTexture()));
 
-    window.getCallback()->getWindowEvent()->addListener(scene);
+    window->getCallback()->getWindowEvent()->addListener(scene);
 
-    while(!glfwWindowShouldClose(window.getWindow())) {
+    while(!glfwWindowShouldClose(window->getWindow())) {
         glUseProgram(program->getProgram());
 	theta ++;
 
@@ -365,14 +410,14 @@ int main() {
 	scene->render();
 
 	glfwPollEvents();
-	glfwSwapBuffers(window.getWindow());
+	glfwSwapBuffers(window->getWindow());
     }
 
     updater.stop();
 
     updater_thread.join();
 
-    glfwTerminate();
+    gl::terminate();
 
     cout << "Hello world" << endl;
     return 0;

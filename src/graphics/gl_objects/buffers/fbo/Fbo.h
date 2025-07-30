@@ -3,9 +3,11 @@
 #include <glad/glad.h>
 
 #include "graphics/gl_objects/texture/Texture.h"
-#include "utils/FBOUtils.h"
+#include "graphics/gl_objects/buffers/fbo/utils/FBOUtils.h"
 
-class FBO {
+#include "utils/IBindable.h"
+
+class FBO : public IBindable{
 public:
     FBO(GLuint target);
 
@@ -15,9 +17,9 @@ public:
 
     virtual void linkTexture(tex::Texture &texture, GLuint attachment, GLuint level);
 
-    virtual void bind();
+    virtual void bind() override;
 
-    virtual void unbind();
+    virtual void unbind() override;
 
     virtual GLuint getFBO() const;
 

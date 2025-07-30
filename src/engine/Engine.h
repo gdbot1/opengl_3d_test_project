@@ -14,9 +14,10 @@
 #include "utils/file/utils/FileListener.h"
 
 #include "engine/controller/IRootable.h"
+#include "engine/controller/IRunnable.h"
 #include "engine/controller/IController.h"
 
-class Engine : public fls::FileListener, public IRootable {
+class Engine : public fls::FileListener, public IRootable, public IRunnable {
 public:
     Engine(const std::string &name);
 
@@ -26,7 +27,7 @@ public:
 
     void reg(IRootable &controller);
 
-    void run();
+    void run() override;
 
     virtual void setRoot(std::shared_ptr<fls::IFolder> root) override;
 

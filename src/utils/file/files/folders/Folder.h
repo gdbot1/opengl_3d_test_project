@@ -16,7 +16,7 @@ class Folder : public fls::File, public fls::IFolder {
 public:
     Folder(const std::string &name);
 
-    virtual ~Folder();
+    virtual ~Folder() = default;
 
     virtual void add(std::shared_ptr<fls::IFile> file) override;
 

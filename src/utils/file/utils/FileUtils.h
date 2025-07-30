@@ -9,6 +9,7 @@
 
 #include "utils/file/IFile.h"
 #include "utils/file/files/IFolder.h"
+#include "utils/file/files/File.h"
 
 namespace fls {
 

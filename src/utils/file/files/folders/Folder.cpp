@@ -2,8 +2,6 @@
 
 fls::Folder::Folder(const std::string &name) : File(name, fls::Type::Folder) {}
 
-fls::Folder::~Folder() {}
-
 void fls::Folder::add(std::shared_ptr<fls::IFile> file) {
     auto it = file_table.find(file->getName());
 

@@ -5,9 +5,11 @@
 
 #include <glad/glad.h>
 
+#include "utils/IBindable.h"
+
 using namespace std;
 
-class EBO {
+class EBO : IBindable {
 public:
     EBO(int* vertices, int length);
 
@@ -16,6 +18,10 @@ public:
     ~EBO();
 
     GLuint createEBO(int* arr, int length);
+
+    void bind() override;
+
+    void unbind() override;
 
     GLuint getEBO();
 

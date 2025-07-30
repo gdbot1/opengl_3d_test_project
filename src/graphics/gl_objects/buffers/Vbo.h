@@ -5,9 +5,11 @@
 
 #include <glad/glad.h>
 
+#include "utils/IBindable.h"
+
 using namespace std;
 
-class VBO {
+class VBO : public IBindable{
 public:
     VBO(float* vertices, int arr_length, int size);
 
@@ -16,6 +18,10 @@ public:
     ~VBO();
 
     GLuint createVBO(float* arr, int length);
+
+    void bind() override;
+
+    void unbind() override;
 
     GLuint getVBO();
 

@@ -59,45 +59,53 @@ std::shared_ptr<fls::IFile> fls::get(const std::string &path, std::shared_ptr<fl
 void fls::run(std::shared_ptr<fls::IFolder> root, fls::FileListener &listener) {
     std::stack<std::pair<std::shared_ptr<fls::IFolder>, int>> stack;
 
+    //основные поля итераций
     std::shared_ptr<fls::IFolder> cursor = root;
-
     int id = 0;
 
     do {
+	//во имя экономии операций, 1 раз получаю и клонирую список файлов
 	std::vector<std::shared_ptr<fls::IFile>> files = cursor->getFiles();
 	
+	//флаг, который показывает, была-ли найдена папка в списке files. Если нет - надо возвращаться назад, если да - углубляться.
 	bool containsFolder = true;
 
 	for (int i = id; i < files.size(); i++) {
 	    std::shared_ptr<fls::IFile> current = files[i];
-
+	    
+	    //вызов onFile для слушателя. В самом onFile стек копируеться. Это сделано для того, что-бы избежать проблем с изминением stack внутри пользовательской функции.
 	    listener.onFile(current, stack);
 
+	    //проверка типа на Folder
 	    if (current->getType() == fls::Type::Folder) {
 		std::shared_ptr<fls::IFolder> folder = fls::cast<fls::IFile, fls::IFolder>(current);
 
 		if (folder) {
-		    stack.push({cursor, i + 1});
+		    //i + 1 - это индекс следующего файла. +1 тут затем, что-бы при возврате, снова не углубиться в ту же папку
+		    stack.push({cursor, i});
 
+		    //изминение полей для следующей итерации
 		    cursor = folder;
 		    id = 0;
 
-		    containsFolder = false;//папка была найдена, и не надо возвращаться назад по дереву
+		    //папка была найдена, и не надо возвращаться назад по дереву
+		    containsFolder = false;
 
 		    break;
 		}
 	    }
 	}
 	
+	//если стак не пустой - значит можно ещё вернуться назад
 	if (stack.size() != 0) {
 	    if (containsFolder) {
 		cursor = stack.top().first;
-		id = stack.top().second;
+		id = stack.top().second + 1;
 		stack.pop();
 	    }
-	}
+	}//а если пуст - значит это конец.
 	else {
 	    break;
 	}
-    } while (true);
+    } while (true);//цикл не заканчивается при stack.size() == 0, так-как в таком случае if выше сначала изменит стак, курсор будет иметь папку root, и тут-же выйдет из функции. Надо сделать ещё 1 итерацию после этого, что-бы дойти до конца root
 }

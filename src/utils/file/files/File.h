@@ -12,7 +12,7 @@ class File : public virtual fls::IFile, public std::enable_shared_from_this<fls:
 public:
     File(const std::string &name, fls::Type type);
 
-    virtual ~File();
+    virtual ~File() = default;
 
     virtual std::string getName() const override;
 

@@ -13,6 +13,8 @@ add_executable(${project_name}
 	src/shader/Shader.cpp
 	src/shader/Program.cpp
 
+	src/graphics/utils/GLUtils.cpp
+
 	src/graphics/gl_objects/Vao.cpp
 	src/graphics/gl_objects/Vao_e.cpp
 
@@ -58,7 +60,6 @@ add_executable(${project_name}
 
 	src/utils/file/files/File.cpp
 	src/utils/file/files/folders/Folder.cpp
-	src/utils/file/files/folders/RootFolder.cpp
 	src/utils/file/utils/FileUtils.cpp
 
 	src/utils/time/Timer.cpp
@@ -67,6 +68,8 @@ add_executable(${project_name}
 
 	src/engine/controller/controllers/Controller.cpp
 	src/engine/controller/controllers/TestController.cpp
+
+	src/engine/sample/samples/TestSample.cpp
 
 	src/engine/update/Updater.cpp
 

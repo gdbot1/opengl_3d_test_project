@@ -4,8 +4,6 @@ fls::File::File(const std::string &name, fls::Type type) : name(name), type(type
     this->parent.reset();
 }
 
-fls::File::~File() {}
-
 std::string fls::File::getName() const {
     return this->name;
 }

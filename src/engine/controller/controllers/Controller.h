@@ -4,12 +4,11 @@
 #include <string>
 
 #include "engine/controller/IController.h"
-#include "engine/controller/IRootable.h"
 
 #include "utils/file/files/File.h"
 #include "utils/file/type/Type.h"
 
-class Controller : public IController, public IRootable, public fls::File {
+class Controller : public IController, public fls::File {
 public:
     Controller(const std::string &name);
 

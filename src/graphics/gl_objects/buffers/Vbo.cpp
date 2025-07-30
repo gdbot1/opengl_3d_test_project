@@ -37,6 +37,14 @@ GLuint VBO::createVBO(float* arr, int length) {
     return vbo;
 }
 
+void VBO::bind() {
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+}
+
+void VBO::unbind() {
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 GLuint VBO::getVBO() {
     return this->vbo;
 }

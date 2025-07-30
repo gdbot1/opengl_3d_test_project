@@ -4,11 +4,13 @@
 #include <memory>
 #include <stdexcept>
 
-#include "utils/TextureUtils.h"
+#include "graphics/gl_objects/texture/utils/TextureUtils.h"
+
+#include "utils/IBindable.h"
 
 namespace tex {
 
-class Texture {
+class Texture : public IBindable {
 public:
     Texture(const char* path);
 
@@ -18,9 +20,9 @@ public:
 
     virtual void bindSampler(int sampler);
 
-    virtual void bind();
+    virtual void bind() override;
 
-    virtual void unbind();
+    virtual void unbind() override;
 
     virtual void clone(tex::Texture &to);
 
