@@ -105,6 +105,38 @@ private:
     shared_ptr<Program> program;
 };
 
+bool w = false, a = false, s = false, d = false, q = false, e = false;//81 69
+
+float x_r = 0, y_r = 180, z_r = 0;
+
+class L2 : public callback::KeyListener {
+public:
+    void onKeyEvent(callback::KeyEvent &event) override {
+	switch(event.getKey()) {
+	    case 87:
+		w = event.getAction();
+		break;
+	    case 65:
+		a = event.getAction();
+		break;
+	    case 83:
+		s = event.getAction();
+		break;
+	    case 68:
+		d = event.getAction();
+		break;
+	    case 81:
+		q = event.getAction();
+		break;
+	    case 69:
+		e = event.getAction();
+		break;
+	}
+
+	cout << "w: " << w << " a: " << a << " s: " << s << " d: " << d << " q: " << q << " e: " << e << endl;
+    }
+};
+
 class L : public callback::KeyListener, public callback::MouseListener, public callback::WindowListener, public DynamicUpdatable, public fls::FileListener {
 public:
     void onKeyEvent(callback::KeyEvent &event) override {
@@ -361,7 +393,7 @@ int main() {
     cube->getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
     //cube.setTexture(texture);
 
-    glm::vec3 pos(0, 0, 1), rot(0, 0, 0), scal(1, 1, 1);
+    glm::vec3 pos(0, 0, 1), rot(x_r, y_r, z_r), scal(1, 1, 1);
 
     //Camera camera(pos, rot, scal, 90, 1, 0.1f, 100);
     
@@ -370,6 +402,10 @@ int main() {
     window->getCallback()->getWindowEvent()->addListener(projection_matrix);
 
     Camera camera(pos, rot, scal, projection_matrix);
+
+    shared_ptr<L2> l2 = make_shared<L2>();
+
+    window->getCallback()->getKeyEvent()->addListener(l2);
 
     int view_matrix_uniform = glGetUniformLocation(program->getProgram(), "view_matrix"), projection_matrix_uniform = glGetUniformLocation(program->getProgram(), "projection_matrix");
 
@@ -393,12 +429,22 @@ int main() {
 	theta ++;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (w) x_r += 1;
+	if (s) x_r -= 1;
+	if (a) y_r += 1;
+	if (d) y_r -= 1;
+	if (e) z_r += 1;
+	if (q) z_r -= 1;
+
+	camera.getView()->setRotation(glm::vec3(x_r, y_r, z_r));
 	
-	camera.getView()->setRotation(glm::vec3(0, cos(theta*3.14f/180) * 45 + 180, 0));
+	//camera.getView()->setRotation(glm::vec3(0, cos(theta*3.14f/180) * 45 + 180, 0));
 
 	//cube squash
-	cube->getModel()->setRotation(glm::vec3(0, theta, theta/2));
-	cube->getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
+	cube->getModel()->setRotation(glm::angleAxis(glm::radians(theta), glm::normalize(glm::vec3(1, 1, 1))));
+	//cube->getModel()->setRotation(glm::vec3(0, theta, theta/2));
+	//cube->getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
 	
 	glm::mat4 view_matrix = camera.getView()->getMatrix();
 	glUniformMatrix4fv(view_matrix_uniform, 1, GL_FALSE, glm::value_ptr(view_matrix));
