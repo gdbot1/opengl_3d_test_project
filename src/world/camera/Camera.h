@@ -3,11 +3,11 @@
 #include <iostream>
 #include <memory>
 
-#include "../../matrix/projection/ProjectionMatrix.h"
-#include "../../matrix/projection/OrthogonalMatrix.h"
-#include "../../matrix/projection/perspective/PerspectiveMatrix.h"
-#include "../../matrix/transform/TransformMatrix.h"
-#include "../../matrix/transform/ViewMatrix.h"
+#include "matrix/projection/ProjectionMatrix.h"
+#include "matrix/projection/OrthogonalMatrix.h"
+#include "matrix/projection/perspective/PerspectiveMatrix.h"
+#include "matrix/transform/TransformMatrix.h"
+#include "matrix/transform/transforms/ViewMatrix.h"
 
 class Camera {
 public:

@@ -105,8 +105,9 @@ private:
     shared_ptr<Program> program;
 };
 
-bool w = false, a = false, s = false, d = false, q = false, e = false;//81 69
+bool w = false, a = false, s = false, d = false, q = false, e = false, up = false, down = false, right = false, left = false;
 
+float x_p = 0, y_p = 0, z_p = 0;
 float x_r = 0, y_r = 180, z_r = 0;
 
 class L2 : public callback::KeyListener {
@@ -131,9 +132,21 @@ public:
 	    case 69:
 		e = event.getAction();
 		break;
+	    case 262:
+		::right = event.getAction();
+		break;
+	    case 263:
+		::left = event.getAction();
+		break;
+	    case 265:
+		::up = event.getAction();
+		break;
+	    case 264:
+		::down = event.getAction();
+		break;
 	}
 
-	cout << "w: " << w << " a: " << a << " s: " << s << " d: " << d << " q: " << q << " e: " << e << endl;
+	cout << "w: " << w << " a: " << a << " s: " << s << " d: " << d << " q: " << q << " e: " << e << " up: " << ::up << " down: " << ::down << " right: " << ::right << " left: " << ::left << endl;
     }
 };
 
@@ -430,21 +443,75 @@ int main() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if (w) x_r += 1;
-	if (s) x_r -= 1;
-	if (a) y_r += 1;
-	if (d) y_r -= 1;
+	if (::up) x_r += 1;
+	if (::down) x_r -= 1;
+	if (::left) y_r += 1;
+	if (::right) y_r -= 1;
 	if (e) z_r += 1;
 	if (q) z_r -= 1;
+	
+	//ВЕКТОРА КАМЕРЫ
 
-	camera.getView()->setRotation(glm::vec3(x_r, y_r, z_r));
+	glm::quat q = camera.getView()->getRotationQuat();
+
+	glm::vec3 c_forward = q * glm::vec3(0, 0, -1);
+	glm::vec3 c_up = q * glm::vec3(0, 1, 0);
+	glm::vec3 c_right = q * glm::vec3(1, 0, 0);
+	
+	c_forward /= 10;
+	c_up /= 10;
+	c_right /= 10;
+
+	if (w) {
+	    x_p -= c_forward.x;
+	    y_p -= c_forward.y;
+	    z_p -= c_forward.z;
+	}
+	if (s) {
+	    x_p += c_forward.x;
+	    y_p += c_forward.y;
+	    z_p += c_forward.z;
+	}
+	if (d) {
+	    x_p -= c_right.x;
+	    y_p -= c_right.y;
+	    z_p -= c_right.z;
+	}
+	if (a) {
+	    x_p += c_right.x;
+	    y_p += c_right.y;
+	    z_p += c_right.z;
+	}
+
+	glm::quat rot_x = glm::angleAxis(glm::radians(x_r), glm::normalize(c_right));
+	glm::quat rot_y = glm::angleAxis(glm::radians(y_r), glm::normalize(c_up));
+	glm::quat rot_z = glm::angleAxis(glm::radians(z_r), glm::normalize(c_forward));
+
+	//camera.getView()->setRotation(rot_y * rot_x * rot_z);
+
+	camera.getView()->rotate(rot_x);
+	camera.getView()->rotate(rot_y);
+	camera.getView()->rotate(rot_z);
+
+	x_r = 0;
+	y_r = 0;
+	z_r = 0;
+
+	camera.getView()->setPosition(glm::vec3(x_p, y_p, z_p));
+	//camera.getView()->setRotation(glm::vec3(x_r, y_r, z_r));
 	
 	//camera.getView()->setRotation(glm::vec3(0, cos(theta*3.14f/180) * 45 + 180, 0));
 
 	//cube squash
-	cube->getModel()->setRotation(glm::angleAxis(glm::radians(theta), glm::normalize(glm::vec3(1, 1, 1))));
+
+	cube->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
+	//cube->getModel()->setRotation(glm::angleAxis(glm::radians(theta), glm::normalize(glm::vec3(1, 1, 1))));
 	//cube->getModel()->setRotation(glm::vec3(0, theta, theta/2));
 	//cube->getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
+
+	//Наблюдение. Куб вращаеться. Кватернион переводиться в углы Эйлера, и снова применяються к кубу. Куб продолжает вращаться правильно
+	glm::vec3 c_rot = cube->getModel()->getRotation();
+	cube->getModel()->setRotation(c_rot);
 	
 	glm::mat4 view_matrix = camera.getView()->getMatrix();
 	glUniformMatrix4fv(view_matrix_uniform, 1, GL_FALSE, glm::value_ptr(view_matrix));

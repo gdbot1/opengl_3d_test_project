@@ -6,17 +6,17 @@ Camera::Camera(std::shared_ptr<mtrx::TransformMatrix> view_matrix, std::shared_p
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, std::shared_ptr<mtrx::ProjectionMatrix> project_matrix) {
-    this->view_matrix = std::make_shared<mtrx::ViewMatrix>(position, rotation, scale, 1);
+    this->view_matrix = std::make_shared<mtrx::ViewMatrix>(position, rotation, scale);
     this->project_matrix = project_matrix;
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
-    this->view_matrix = std::make_shared<mtrx::ViewMatrix>(position, rotation, scale, 1);
+    this->view_matrix = std::make_shared<mtrx::ViewMatrix>(position, rotation, scale);
     this->project_matrix = std::make_shared<mtrx::OrthogonalMatrix>(-1, 1, -1, 1, -1, 1);
 }
 
 Camera::Camera(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float fov, float aspect, float near, float far) {
-    this->view_matrix = std::make_shared<mtrx::ViewMatrix>(position, rotation, scale, 1);
+    this->view_matrix = std::make_shared<mtrx::ViewMatrix>(position, rotation, scale);
     this->project_matrix = std::make_shared<mtrx::PerspectiveMatrix>(fov, aspect, near, far);
 }
 

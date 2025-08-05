@@ -17,13 +17,13 @@ Object::Object(shared_ptr<VAO> vao, shared_ptr<mtrx::TransformMatrix> model_matr
 Object::Object(shared_ptr<VAO> vao, shared_ptr<tex::Texture> texture) {
     this->vao = vao;
     this->texture = texture;
-    this->model_matrix = make_shared<mtrx::ModelMatrix>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), 1);
+    this->model_matrix = make_shared<mtrx::ModelMatrix>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 }
 
 
 Object::Object(shared_ptr<VAO> vao) {
     this->vao = vao;
-    this->model_matrix = make_shared<mtrx::ModelMatrix>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1), 1);
+    this->model_matrix = make_shared<mtrx::ModelMatrix>(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1));
 }
 
 Object::~Object() {

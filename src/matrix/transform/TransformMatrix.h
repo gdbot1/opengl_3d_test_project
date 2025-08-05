@@ -8,44 +8,27 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/component_wise.hpp>
 
-#include "../IMatrix.h"
+#include "matrix/IMatrix.h"
+#include "matrix/transform/position/Position.h"
+#include "matrix/transform/rotation/Rotation.h"
+#include "matrix/transform/scale/Scale.h"
 
 namespace mtrx {
 
-class TransformMatrix : mtrx::IMatrix {
+class TransformMatrix : public mtrx::IMatrix, public mtrx::Position, public mtrx::Rotation, public mtrx::Scale {
 public:
     TransformMatrix(glm::vec3 position, glm::quat rotation, glm::vec3 scale);//mode = 1
 
-    TransformMatrix(glm::vec3 position, glm::quat rotation, glm::vec3 scale, float mode);
-
     TransformMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);//mode = 1
-
-    TransformMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mode);
 
     virtual ~TransformMatrix() = default;
 
     virtual glm::mat4 getMatrix() const override = 0;
 
-    void setPosition(glm::vec3 position);
-
-    void setRotation(glm::vec3 rotation);
-
-    void setRotation(glm::quat rotation);
-
-    void setScale(glm::vec3 scale);
-
     void setMode(float mode);
-
-    glm::vec3 getPosition() const;
-
-    glm::vec3 getRotation() const;
-
-    glm::vec3 getScale() const;
 
     float getMode() const;
 protected:
-    glm::vec3 position, scale;//x - pitch, y - yaw, z - roll
-    glm::quat rotation;
     float mode;//множитель при getMatrix
 };
 

@@ -1,17 +1,17 @@
 #pragma once
 
-#include "../../graphics/gl_objects/Vao.h"
+#include "graphics/gl_objects/Vao.h"
 
-#include "../../graphics/gl_objects/texture/Texture.h"
+#include "graphics/gl_objects/texture/Texture.h"
 
-#include "../../graphics/gl_objects/texture/utils/TextureUtils.h"
+#include "graphics/gl_objects/texture/utils/TextureUtils.h"
 
-#include "../../graphics/IRenderable.h"
+#include "graphics/IRenderable.h"
 
-#include "../../matrix/utils/MatrixUtils.h"
+#include "matrix/utils/MatrixUtils.h"
 
-#include "../../matrix/transform/TransformMatrix.h"
-#include "../../matrix/transform/ModelMatrix.h"
+#include "matrix/transform/TransformMatrix.h"
+#include "matrix/transform/transforms/ModelMatrix.h"
 
 class Object : public IRenderable {
 public:

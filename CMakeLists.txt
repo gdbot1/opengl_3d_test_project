@@ -47,9 +47,13 @@ add_executable(${project_name}
 	src/matrix/projection/perspective/PerspectiveWindowMatrix.cpp
 	src/matrix/projection/OrthogonalMatrix.cpp
 
+	src/matrix/transform/position/Position.cpp
+	src/matrix/transform/rotation/Rotation.cpp
+	src/matrix/transform/scale/Scale.cpp
+
 	src/matrix/transform/TransformMatrix.cpp
-	src/matrix/transform/ViewMatrix.cpp
-	src/matrix/transform/ModelMatrix.cpp
+	src/matrix/transform/transforms/ViewMatrix.cpp
+	src/matrix/transform/transforms/ModelMatrix.cpp
 
 	src/world/camera/Camera.cpp
 

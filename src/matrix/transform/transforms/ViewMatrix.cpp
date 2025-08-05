@@ -3,9 +3,6 @@
 mtrx::ViewMatrix::ViewMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
 	: mtrx::TransformMatrix(position, rotation, scale) {}
 
-mtrx::ViewMatrix::ViewMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, float mode)
-	: mtrx::TransformMatrix(position, rotation, scale, mode) {}
-
 glm::mat4 mtrx::ViewMatrix::getMatrix() const {
     glm::mat4 view_matrix(1.0f);
 
@@ -15,10 +12,10 @@ glm::mat4 mtrx::ViewMatrix::getMatrix() const {
 
     //view_matrix *= glm::inverse(glm::toMat4(mtrx::TransformMatrix::rotation));
 
-    view_matrix *= glm::toMat4(glm::conjugate(mtrx::TransformMatrix::rotation));
+    view_matrix *= glm::toMat4(glm::conjugate(rotation));
 
-    view_matrix = glm::translate(view_matrix, mtrx::TransformMatrix::position * mode);
-    view_matrix = glm::scale(view_matrix, mtrx::TransformMatrix::mode / mtrx::TransformMatrix::scale);
+    view_matrix = glm::translate(view_matrix, position * mode);
+    view_matrix = glm::scale(view_matrix, mode / compression);
 
     return view_matrix;
 }
