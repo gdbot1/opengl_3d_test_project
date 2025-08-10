@@ -10,11 +10,11 @@ public:
 
     virtual ~Position() = default;
 
-    void translate(glm::vec3 motion);
+    virtual void translate(glm::vec3 motion);
 
-    void setPosition(glm::vec3 position);
+    virtual void setPosition(glm::vec3 position);
 
-    glm::vec3 getPosition() const;
+    virtual glm::vec3 getPosition() const;
 protected:
     glm::vec3 position;
 };

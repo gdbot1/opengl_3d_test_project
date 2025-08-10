@@ -70,6 +70,10 @@
 #include "engine/controller/controllers/TestController.h"
 #include "engine/sample/samples/TestSample.h"
 
+#include "utils/collision/gjk/hitbox/obb/OBBHitbox.h"
+#include "utils/collision/gjk/GJKUtils.h"
+
+
 using namespace std;
 
 class Print {
@@ -403,10 +407,35 @@ int main() {
     object2->getModel()->setRotation(glm::vec3(-25, 45, 0));
 
     shared_ptr<Cube> cube = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
+    shared_ptr<Cube> cube2 = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     cube->getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
+    cube->getModel()->setRotation(glm::vec3(0, 0, 45));//change cube rotation
+    cube->getModel()->setScale(glm::vec3(1, 2, 1));//change cube scale
     //cube.setTexture(texture);
 
-    glm::vec3 pos(0, 0, 1), rot(x_r, y_r, z_r), scal(1, 1, 1);
+    gjk::OBBHitbox hitbox1({
+	glm::vec3(-0.5f, -0.5f, -0.5f),
+	glm::vec3(0.5f, -0.5f, -0.5f),
+	glm::vec3(0.5f, -0.5f, 0.5f),
+	glm::vec3(-0.5f, -0.5f, 0.5f),
+	glm::vec3(-0.5f, 0.5f, -0.5f),
+	glm::vec3(0.5f, 0.5f, -0.5f),
+	glm::vec3(0.5f, 0.5f, 0.5f),
+	glm::vec3(-0.5f, 0.5f, 0.5f)
+    }, cube->getModel());
+
+    gjk::OBBHitbox hitbox2({
+	glm::vec3(-0.5f, -0.5f, -0.5f),
+	glm::vec3(0.5f, -0.5f, -0.5f),
+	glm::vec3(0.5f, -0.5f, 0.5f),
+	glm::vec3(-0.5f, -0.5f, 0.5f),
+	glm::vec3(-0.5f, 0.5f, -0.5f),
+	glm::vec3(0.5f, 0.5f, -0.5f),
+	glm::vec3(0.5f, 0.5f, 0.5f),
+	glm::vec3(-0.5f, 0.5f, 0.5f)
+    }, cube2->getModel());
+
+    glm::vec3 pos(0, 2, 1), rot(x_r, y_r, z_r), scal(1, 1, 1);
 
     //Camera camera(pos, rot, scal, 90, 1, 0.1f, 100);
     
@@ -431,6 +460,7 @@ int main() {
     scene->addLink(object);
     scene->addLink(object2);
     scene->addLink(cube);
+    scene->addLink(cube2);
     scene->addLink(make_shared<render::Swap>());
     scene->addLink(make_shared<render::BindFBO>(scene->getFBOInput(), false));
     scene->addLink(make_shared<render::Display>(scene->getFBOInput()->getColorTexture()));
@@ -447,20 +477,21 @@ int main() {
 	if (::down) x_r -= 1;
 	if (::left) y_r += 1;
 	if (::right) y_r -= 1;
-	if (e) z_r += 1;
-	if (q) z_r -= 1;
+	if (q) z_r += 1;
+	if (e) z_r -= 1;
 	
 	//ВЕКТОРА КАМЕРЫ
 
+/*
 	glm::quat q = camera.getView()->getRotationQuat();
 
 	glm::vec3 c_forward = q * glm::vec3(0, 0, -1);
 	glm::vec3 c_up = q * glm::vec3(0, 1, 0);
 	glm::vec3 c_right = q * glm::vec3(1, 0, 0);
 	
-	c_forward /= 10;
-	c_up /= 10;
-	c_right /= 10;
+	c_forward /= 100;
+	c_up /= 100;
+	c_right /= 100;
 
 	if (w) {
 	    x_p -= c_forward.x;
@@ -482,7 +513,8 @@ int main() {
 	    y_p += c_right.y;
 	    z_p += c_right.z;
 	}
-
+*/
+/*
 	glm::quat rot_x = glm::angleAxis(glm::radians(x_r), glm::normalize(c_right));
 	glm::quat rot_y = glm::angleAxis(glm::radians(y_r), glm::normalize(c_up));
 	glm::quat rot_z = glm::angleAxis(glm::radians(z_r), glm::normalize(c_forward));
@@ -496,15 +528,32 @@ int main() {
 	x_r = 0;
 	y_r = 0;
 	z_r = 0;
+*/
+	float speed = 0.01f;
+	if (w) {
+	    z_p += speed;
+	}
+	if (s) {
+	    z_p -= speed;
+	}
+	if (d) {
+	    x_p -= speed;
+	}
+	if (a) {
+	    x_p += speed;
+	}
 
-	camera.getView()->setPosition(glm::vec3(x_p, y_p, z_p));
-	//camera.getView()->setRotation(glm::vec3(x_r, y_r, z_r));
+	cube2->getModel()->setPosition(glm::vec3(x_p, y_p, z_p));
+	//camera.getView()->setPosition(glm::vec3(x_p, y_p, z_p));
+	camera.getView()->setRotation(glm::vec3(x_r, y_r, z_r));
 	
+	cout << "GJK COLLISION STATUS: " << gjk::collision(hitbox1, hitbox2) << endl;
+
 	//camera.getView()->setRotation(glm::vec3(0, cos(theta*3.14f/180) * 45 + 180, 0));
 
 	//cube squash
 
-	cube->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
+	//cube->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
 	//cube->getModel()->setRotation(glm::angleAxis(glm::radians(theta), glm::normalize(glm::vec3(1, 1, 1))));
 	//cube->getModel()->setRotation(glm::vec3(0, theta, theta/2));
 	//cube->getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));

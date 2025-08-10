@@ -68,6 +68,13 @@ add_executable(${project_name}
 
 	src/utils/time/Timer.cpp
 
+	src/utils/collision/simplex/Simplex.cpp
+	src/utils/collision/simplex/utils/SimplexUtils.cpp
+	src/utils/collision/gjk/GJKUtils.cpp
+	src/utils/collision/gjk/hitbox/obb/OBBHitbox.cpp
+
+	src/utils/math/MathUtils.cpp
+
 	src/engine/Engine.cpp
 
 	src/engine/controller/controllers/Controller.cpp

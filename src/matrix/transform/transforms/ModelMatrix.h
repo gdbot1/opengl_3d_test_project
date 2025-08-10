@@ -1,8 +1,10 @@
+#pragma once
+
 #include "matrix/transform/TransformMatrix.h"
 
 namespace mtrx {
 
-class ModelMatrix : public TransformMatrix {
+class ModelMatrix : public mtrx::TransformMatrix {
 public:
     ModelMatrix(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);//mode = 1
 

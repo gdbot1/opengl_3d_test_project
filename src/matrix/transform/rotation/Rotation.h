@@ -12,17 +12,17 @@ public:
 
     virtual ~Rotation() = default;
 
-    void rotate(glm::quat rotation);
+    virtual void rotate(glm::quat rotation);
 
-    void rotate(glm::vec3 rotation);
+    virtual void rotate(glm::vec3 rotation);
 
-    void setRotation(glm::quat rotation);
+    virtual void setRotation(glm::quat rotation);
 
-    void setRotation(glm::vec3 rotation);
+    virtual void setRotation(glm::vec3 rotation);
 
-    glm::quat getRotationQuat() const;
+    virtual glm::quat getRotationQuat() const;
 
-    glm::vec3 getRotation() const;
+    virtual glm::vec3 getRotation() const;
 protected:
     glm::quat rotation;
 };

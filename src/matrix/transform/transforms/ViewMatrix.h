@@ -9,6 +9,13 @@ public:
     ~ViewMatrix() = default;
 
     virtual glm::mat4 getMatrix() const override;
-};
+
+    virtual void rotate(glm::vec3 rotation) override;
+
+    virtual void setRotation(glm::vec3 rotation) override;
+
+private:
+    glm::quat eulerToQuatByYXZ(glm::vec3 vector);
+ };
 
 }
