@@ -27,6 +27,7 @@ void simplex::Simplex::addFace(std::shared_ptr<simplex::SimplexFace> face) {
 }
 
 bool simplex::Simplex::addFace(const int i1, const int i2, const int i3) {
+/*
     std::shared_ptr<glm::vec3> normal = simplex::findNormal(*this, i1, i2, i3);
 
     if (!normal || glm::length(*normal) == 0) {
@@ -40,9 +41,23 @@ bool simplex::Simplex::addFace(const int i1, const int i2, const int i3) {
     face->dist = *simplex::faceDistanceToOrigin(*this, *face);
 
     return true;
+*/
+
+    std::shared_ptr<simplex::SimplexFace> face = simplex::createFace(*this, i1, i2, i3);
+
+    if (face) {
+	faces.push_back(face);
+
+	return true;
+    }
+
+    return false;
 }
 
 bool simplex::Simplex::addFace(const int i1, const int i2, const int i3, const bool lookAtOutside) {
+    return lookAtOutside ? simplex::Simplex::addFace(i1, i2, i3) : simplex::Simplex::addFace(i1, i3, i2);
+
+/*
     if (simplex::Simplex::addFace(i1, i2, i3)) {
 	if (lookAtOutside) {
             faces.back()->normal = -faces.back()->normal;
@@ -50,6 +65,7 @@ bool simplex::Simplex::addFace(const int i1, const int i2, const int i3, const b
 	return true;
     }
     return false;
+*/
 }
 
 void simplex::Simplex::setFace(std::shared_ptr<SimplexFace> face, int id) {

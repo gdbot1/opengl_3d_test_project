@@ -72,6 +72,7 @@
 
 #include "utils/collision/gjk/hitbox/obb/OBBHitbox.h"
 #include "utils/collision/gjk/GJKUtils.h"
+#include "utils/collision/epa/EPAUtils.h"
 
 
 using namespace std;
@@ -109,7 +110,7 @@ private:
     shared_ptr<Program> program;
 };
 
-bool w = false, a = false, s = false, d = false, q = false, e = false, up = false, down = false, right = false, left = false;
+bool w = false, a = false, s = false, d = false, q = false, e = false, up = false, down = false, right = false, left = false, space = false, shift = false;
 
 float x_p = 0, y_p = 0, z_p = 0;
 float x_r = 0, y_r = 180, z_r = 0;
@@ -148,9 +149,13 @@ public:
 	    case 264:
 		::down = event.getAction();
 		break;
+	    case 340:
+		::shift = event.getAction();
+		break;
+	    case 32:
+		::space = event.getAction();
+		break;
 	}
-
-	cout << "w: " << w << " a: " << a << " s: " << s << " d: " << d << " q: " << q << " e: " << e << " up: " << ::up << " down: " << ::down << " right: " << ::right << " left: " << ::left << endl;
     }
 };
 
@@ -409,8 +414,8 @@ int main() {
     shared_ptr<Cube> cube = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     shared_ptr<Cube> cube2 = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     cube->getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
-    cube->getModel()->setRotation(glm::vec3(0, 0, 45));//change cube rotation
-    cube->getModel()->setScale(glm::vec3(1, 2, 1));//change cube scale
+    cube->getModel()->setRotation(glm::vec3(45, 45, 0));//change cube rotation
+    cube->getModel()->setScale(glm::vec3(10, 10, 0.1f));//change cube scale
     //cube.setTexture(texture);
 
     gjk::OBBHitbox hitbox1({
@@ -482,13 +487,15 @@ int main() {
 	
 	//ВЕКТОРА КАМЕРЫ
 
-/*
 	glm::quat q = camera.getView()->getRotationQuat();
 
 	glm::vec3 c_forward = q * glm::vec3(0, 0, -1);
 	glm::vec3 c_up = q * glm::vec3(0, 1, 0);
 	glm::vec3 c_right = q * glm::vec3(1, 0, 0);
+
+	c_forward *= 3;
 	
+/*
 	c_forward /= 100;
 	c_up /= 100;
 	c_right /= 100;
@@ -542,18 +549,39 @@ int main() {
 	if (a) {
 	    x_p += speed;
 	}
+	if (space) {
+	    y_p += speed;
+	}
+	if (shift) {
+	    y_p -= speed;
+	}
 
+	camera.getView()->setPosition(glm::vec3(-x_p + c_forward.x, -y_p + c_forward.y, -z_p + c_forward.z));
 	cube2->getModel()->setPosition(glm::vec3(x_p, y_p, z_p));
 	//camera.getView()->setPosition(glm::vec3(x_p, y_p, z_p));
 	camera.getView()->setRotation(glm::vec3(x_r, y_r, z_r));
-	
-	cout << "GJK COLLISION STATUS: " << gjk::collision(hitbox1, hitbox2) << endl;
+	int it = 20;
+
+	simplex::Simplex simplex;
+
+	epa::CollisionResult result;
+
+	epa::collision(hitbox1, hitbox2, result, it);//<-
+
+	//cout << "GJK COLLISION STATUS: " << gjk::collision(simplex, hitbox1, hitbox2, it) << " its: " << it << endl;
+	cout << "EPA COLLISION STATUS: " << result.status  << " depth: " << result.depth << " x: " << result.vector.x << " y: " << result.vector.y << " z: " << result.vector.z << " its: " << it << endl;
+
+	if (result.status) {
+	    x_p += result.vector.x * result.depth;
+	    y_p += result.vector.y * result.depth;
+	    z_p += result.vector.z * result.depth;
+	}
 
 	//camera.getView()->setRotation(glm::vec3(0, cos(theta*3.14f/180) * 45 + 180, 0));
 
 	//cube squash
 
-	//cube->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
+	cube->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
 	//cube->getModel()->setRotation(glm::angleAxis(glm::radians(theta), glm::normalize(glm::vec3(1, 1, 1))));
 	//cube->getModel()->setRotation(glm::vec3(0, theta, theta/2));
 	//cube->getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));
@@ -573,6 +601,7 @@ int main() {
 
 	glfwPollEvents();
 	glfwSwapBuffers(window->getWindow());
+
     }
 
     updater.stop();

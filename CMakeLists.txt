@@ -72,6 +72,7 @@ add_executable(${project_name}
 	src/utils/collision/simplex/utils/SimplexUtils.cpp
 	src/utils/collision/gjk/GJKUtils.cpp
 	src/utils/collision/gjk/hitbox/obb/OBBHitbox.cpp
+	src/utils/collision/epa/EPAUtils.cpp
 
 	src/utils/math/MathUtils.cpp
 

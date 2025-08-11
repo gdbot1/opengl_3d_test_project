@@ -65,3 +65,47 @@ std::pair<int, int> simplex::getSameEdge(simplex::SimplexFace &face1, simplex::S
 
     return edge;
 }
+
+int simplex::getEdgeUniqueHashcode(int a, int b, int max_i) {
+    return std::min(a, b) * max_i + std::max(a, b);
+}
+
+void simplex::stillOne(int a, int b, int max_i, std::unordered_map<int, int> &table, std::vector<int> &keys) {
+    int hash = simplex::getEdgeUniqueHashcode(a, b, max_i);
+
+    if (table.find(hash) == table.end()) {
+	table[hash] = 1;
+	keys.push_back(hash);
+    }
+    else {
+	table[hash]++;
+    }
+}
+
+void simplex::still(simplex::SimplexFace &face, int max_i, std::unordered_map<int, int> &table, std::vector<int> &keys) {
+    simplex::stillOne(face.i1, face.i2, max_i, table, keys);
+    simplex::stillOne(face.i2, face.i3, max_i, table, keys);
+    simplex::stillOne(face.i3, face.i1, max_i, table, keys);
+}
+
+int simplex::getI1(int hash, int max_i) {
+    return hash / max_i;
+}
+
+int simplex::getI2(int hash, int max_i) {
+    return hash % max_i;
+}
+
+std::shared_ptr<simplex::SimplexFace> simplex::createFace(simplex::Simplex &simplex, int i1, int i2, int i3) {
+    std::shared_ptr<glm::vec3> normal = simplex::findNormal(simplex, i1, i2, i3);
+
+    if (!normal || glm::length(*normal) == 0) {
+	return nullptr;
+    }
+
+    std::shared_ptr<simplex::SimplexFace> face = std::make_shared<simplex::SimplexFace>(i1, i2, i3, *normal, 0.0f);
+
+    face->dist = *simplex::faceDistanceToOrigin(simplex, *face);
+
+    return face;
+}

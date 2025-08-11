@@ -8,16 +8,17 @@ glm::vec3 gjk::OBBHitbox::support(glm::vec3 direction) const {
     glm::vec3 correct_direction = glm::vec3(glm::inverse(mat) * glm::vec4(direction, 0.0f)); 
 
     float max_scal = -std::numeric_limits<float>::max();
-    glm::vec3 sup = vertices[0], direction_n = glm::normalize(direction);
+    glm::vec3 sup = vertices[0], direction_n = glm::normalize(correct_direction);
 
     for (int i = 0; i < vertices.size(); i++) {
-	glm::vec3 vertex = vertices[i];
+	const glm::vec3 vertex = glm::normalize(glm::vec3(vertices[i]));
+	//const glm::vec3 vertex = vertices[i];
 
 	float scalar = glm::dot(vertex, direction_n);
 
 	if (scalar > max_scal) {
 	    max_scal = scalar;
-	    sup = vertex;
+	    sup = vertices[i];
 	}
     }
 

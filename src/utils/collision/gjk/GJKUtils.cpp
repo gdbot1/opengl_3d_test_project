@@ -196,8 +196,7 @@ int gjk::finalStage(simplex::Simplex &simplex) {
 	}
     }
 
-    if (inner_faces.size() == 3 || outer_faces.size() == 3) {
-	std::cout << "gjk collision detected" << std::endl;
+    if (inner_faces.size() == 3) {//внутри для всех 3 граней (4 грань находиться снизу, и для неё центр всегда внутри)
 	return 1;
     }
     else if (outer_faces.size() == 1) {
@@ -217,7 +216,7 @@ int gjk::finalStage(simplex::Simplex &simplex) {
 
 	return 4;
     }
-    else {
+    else if (outer_faces.size() == 2) {
 	std::pair<int, int> sameEdge = simplex::getSameEdge(*outer_faces[0], *outer_faces[1]);
 
 	if (sameEdge.first == -1 || sameEdge.second == -1) {
@@ -229,9 +228,12 @@ int gjk::finalStage(simplex::Simplex &simplex) {
 
 	simplex.clear();
 
-	simplex.addPoint(point1);
 	simplex.addPoint(point2);
+	simplex.addPoint(point1);
 
 	return 3;
+    }
+    else {
+	return 0;
     }
 }
