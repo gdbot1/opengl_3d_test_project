@@ -5,11 +5,11 @@
 namespace simplex {
 
 struct SimplexPoint {
-    glm::vec3 point;
+    glm::vec3 point, support;
 
     SimplexPoint() = default;
 
-    SimplexPoint(glm::vec3 point) : point(point) {}
+    SimplexPoint(glm::vec3 point, glm::vec3 support) : point(point), support(support) {}
 
     virtual ~SimplexPoint() = default;
 };

@@ -15,7 +15,7 @@
 
 namespace gjk {
 
-glm::vec3 getMinkovskiDifferent(const gjk::IHitbox &hitbox1, const gjk::IHitbox &hitbox2, const glm::vec3 direction);
+std::shared_ptr<simplex::SimplexPoint> getMinkovskiDifferent(const gjk::IHitbox &hitbox1, const gjk::IHitbox &hitbox2, const glm::vec3 direction);
 
 bool collision(simplex::Simplex &simplex, const gjk::IHitbox &hitbox1, const gjk::IHitbox &hitbox2, int &iterations);
 

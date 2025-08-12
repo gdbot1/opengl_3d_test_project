@@ -1,7 +1,5 @@
 #include "EPAUtils.h"
 
-#include <iostream>
-
 void epa::collision(const gjk::IHitbox &hitbox1, const gjk::IHitbox &hitbox2, epa::CollisionResult &result, int &iterations) {
     simplex::Simplex simplex;
 
@@ -50,24 +48,23 @@ bool epa::grow(simplex::Simplex &simplex, const gjk::IHitbox &hitbox1, const gjk
 
     result.setVector(glm::normalize(glm::vec3(normal)));
     result.setDepth(nearest_face->dist + 0.00001f);
-
+    result.setContact(simplex.getPoint(nearest_face->i1)->support, simplex.getPoint(nearest_face->i2)->support, simplex.getPoint(nearest_face->i3)->support);
+    
     if (simplex::faceIsLookingAtOrigin(simplex, *nearest_face)) {
 	normal *= -1;
     }
 
-    glm::vec3 new_point = gjk::getMinkovskiDifferent(hitbox1, hitbox2, normal);
+    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = gjk::getMinkovskiDifferent(hitbox1, hitbox2, normal);
 
     glm::vec3 point_i1 = simplex.getPoint(nearest_face->i1)->point;
 
-    glm::vec3 vector = math::vectorAB(point_i1, new_point);
+    glm::vec3 vector = math::vectorAB(point_i1, new_simplex_point->point);
 
     float dist = std::abs(math::distanceTo(vector, normal));
 
     if (dist <= 0.00001f) {
 	return true;
     }
-
-    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = std::make_shared<simplex::SimplexPoint>(new_point);
 
     simplex.addPoint(new_simplex_point);
 
@@ -144,7 +141,6 @@ std::shared_ptr<std::vector<std::shared_ptr<simplex::SimplexFace>>> epa::createN
     std::shared_ptr<std::vector<std::shared_ptr<simplex::SimplexFace>>> new_faces = std::make_shared<std::vector<std::shared_ptr<simplex::SimplexFace>>>();
 
     for (int i = 0; i < keys.size(); i++) {
-    	std::cout << "3" << std::endl;
 	int hash = keys[i];
 
 	if (table[hash] != 1) {

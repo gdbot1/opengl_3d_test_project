@@ -42,6 +42,7 @@
 
 #include "world/objects/Object.h"
 #include "world/objects/Cube.h"
+#include "world/objects/Sphere.h"
 
 #include "events/Dispatcher.h"
 
@@ -71,6 +72,7 @@
 #include "engine/sample/samples/TestSample.h"
 
 #include "utils/collision/gjk/hitbox/obb/OBBHitbox.h"
+#include "utils/collision/gjk/hitbox/sphere/SphereHitbox.h"
 #include "utils/collision/gjk/GJKUtils.h"
 #include "utils/collision/epa/EPAUtils.h"
 
@@ -414,9 +416,15 @@ int main() {
     shared_ptr<Cube> cube = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     shared_ptr<Cube> cube2 = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     cube->getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
-    cube->getModel()->setRotation(glm::vec3(45, 45, 0));//change cube rotation
-    cube->getModel()->setScale(glm::vec3(10, 10, 0.1f));//change cube scale
+    //cube->getModel()->setRotation(glm::vec3(45, 45, 0));
+    //cube->getModel()->setScale(glm::vec3(1, 1, 0.5f));//change cube scale
+    //cube->getModel()->setScale(glm::vec3(10, 10, 0.1f));//change cube scale
     //cube.setTexture(texture);
+
+    shared_ptr<Sphere> sphere = make_shared<Sphere>(0, 0, 0, 0.5f, 16, 8);
+    sphere->getModel()->setPosition(glm::vec3(-2, 0, 2));
+    sphere->getModel()->setScale(glm::vec3(0.75f, 1, 0.75f));
+    sphere->getModel()->setRotation(glm::vec3(45, 0, 0));
 
     gjk::OBBHitbox hitbox1({
 	glm::vec3(-0.5f, -0.5f, -0.5f),
@@ -439,6 +447,15 @@ int main() {
 	glm::vec3(0.5f, 0.5f, 0.5f),
 	glm::vec3(-0.5f, 0.5f, 0.5f)
     }, cube2->getModel());
+
+    gjk::SphereHitbox hitbox3(0.5f, sphere->getModel());
+
+    gjk::OBBHitbox hitbox4({
+	glm::vec3(-0.5f, -0.5f, 1),
+	glm::vec3(-0.5f, 0.5f, 1),
+	glm::vec3(0.5f, 0.5f, 1),
+	glm::vec3(0.5f, -0.5f, 1)
+    }, object2->getModel());
 
     glm::vec3 pos(0, 2, 1), rot(x_r, y_r, z_r), scal(1, 1, 1);
 
@@ -466,6 +483,7 @@ int main() {
     scene->addLink(object2);
     scene->addLink(cube);
     scene->addLink(cube2);
+    scene->addLink(sphere);
     scene->addLink(make_shared<render::Swap>());
     scene->addLink(make_shared<render::BindFBO>(scene->getFBOInput(), false));
     scene->addLink(make_shared<render::Display>(scene->getFBOInput()->getColorTexture()));
@@ -560,7 +578,7 @@ int main() {
 	cube2->getModel()->setPosition(glm::vec3(x_p, y_p, z_p));
 	//camera.getView()->setPosition(glm::vec3(x_p, y_p, z_p));
 	camera.getView()->setRotation(glm::vec3(x_r, y_r, z_r));
-	int it = 20;
+	int it = 40;
 
 	simplex::Simplex simplex;
 
@@ -568,8 +586,13 @@ int main() {
 
 	epa::collision(hitbox1, hitbox2, result, it);//<-
 
+	//result.point1 = hitbox1.support(result.vector);
+
 	//cout << "GJK COLLISION STATUS: " << gjk::collision(simplex, hitbox1, hitbox2, it) << " its: " << it << endl;
-	cout << "EPA COLLISION STATUS: " << result.status  << " depth: " << result.depth << " x: " << result.vector.x << " y: " << result.vector.y << " z: " << result.vector.z << " its: " << it << endl;
+	cout << "EPA COLLISION STATUS: " << result.status  << " depth: " << result.depth << " its: " << it << endl;
+	cout << "p1: " << result.contact.p1.x << " " << result.contact.p1.y << " " << result.contact.p1.z << endl;
+	cout << "p1: " << result.contact.p2.x << " " << result.contact.p2.y << " " << result.contact.p2.z << endl;
+	cout << "p1: " << result.contact.p3.x << " " << result.contact.p3.y << " " << result.contact.p3.z << endl;
 
 	if (result.status) {
 	    x_p += result.vector.x * result.depth;
@@ -581,7 +604,8 @@ int main() {
 
 	//cube squash
 
-	cube->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
+	//sphere->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
+	//cube->getModel()->rotate(glm::angleAxis(glm::radians(1.0f), glm::normalize(glm::vec3(1, 1, 1))));
 	//cube->getModel()->setRotation(glm::angleAxis(glm::radians(theta), glm::normalize(glm::vec3(1, 1, 1))));
 	//cube->getModel()->setRotation(glm::vec3(0, theta, theta/2));
 	//cube->getModel()->setScale(glm::vec3(1, cos(theta*3.14f/180)+2, 1));

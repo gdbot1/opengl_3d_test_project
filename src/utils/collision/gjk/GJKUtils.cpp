@@ -2,11 +2,11 @@
 
 #include <iostream>
 
-glm::vec3 gjk::getMinkovskiDifferent(const gjk::IHitbox &hitbox1, const gjk::IHitbox &hitbox2, const glm::vec3 direction) {
+std::shared_ptr<simplex::SimplexPoint> gjk::getMinkovskiDifferent(const gjk::IHitbox &hitbox1, const gjk::IHitbox &hitbox2, const glm::vec3 direction) {
     glm::vec3 s1 = hitbox1.support(direction);
     glm::vec3 s2 = hitbox2.support(-direction);
 
-    return s1 - s2;
+    return std::make_shared<simplex::SimplexPoint>(s1 - s2, s1);
 }
 
 bool gjk::collision(simplex::Simplex &simplex, const gjk::IHitbox &hitbox1, const gjk::IHitbox &hitbox2, int &iterations) {
@@ -51,10 +51,7 @@ int gjk::firstStage(simplex::Simplex &simplex, const gjk::IHitbox &hitbox1, cons
 	direction = glm::vec3(1, 0, 0);
     }
 
-    glm::vec3 support = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
-
-    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = std::make_shared<simplex::SimplexPoint>(support);
-
+    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
     simplex.addPoint(new_simplex_point);
 
     return gjk::secondStage(simplex, hitbox1, hitbox2);
@@ -71,15 +68,13 @@ int gjk::secondStage(simplex::Simplex &simplex, const gjk::IHitbox &hitbox1, con
 	direction = glm::vec3(1, 0, 0);
     }
 
-    glm::vec3 support = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
+    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
 
-    float scalar = glm::dot(support, direction);
+    float scalar = glm::dot(new_simplex_point->point, direction);
 
     if (scalar < 0) {
 	return 0;
     }
-
-    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = std::make_shared<simplex::SimplexPoint>(support);
 
     simplex.addPoint(new_simplex_point);
 
@@ -110,15 +105,13 @@ int gjk::thirdStage(simplex::Simplex &simplex, const gjk::IHitbox &hitbox1, cons
 	direction = -direction;
     }
 
-    glm::vec3 support = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
+    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
 
-    float scalar = glm::dot(support, direction);
+    float scalar = glm::dot(new_simplex_point->point, direction);
 
     if (scalar < 0) {
 	return 0;
     }
-
-    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = std::make_shared<simplex::SimplexPoint>(support);
 
     simplex.addPoint(new_simplex_point);
 
@@ -151,15 +144,13 @@ int gjk::fourthStage(simplex::Simplex &simplex, const gjk::IHitbox &hitbox1, con
 	direction = glm::vec3(1, 0, 0);
     }
 
-    glm::vec3 support = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
+    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = gjk::getMinkovskiDifferent(hitbox1, hitbox2, direction);
 
-    float scalar = glm::dot(support, direction);
+    float scalar = glm::dot(new_simplex_point->point, direction);
 
     if (scalar < 0) {
 	return 0;
     }
-
-    std::shared_ptr<simplex::SimplexPoint> new_simplex_point = std::make_shared<simplex::SimplexPoint>(support);
 
     simplex.addPoint(new_simplex_point);
 
