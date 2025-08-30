@@ -75,7 +75,14 @@
 #include "utils/collision/gjk/hitbox/sphere/SphereHitbox.h"
 #include "utils/collision/gjk/GJKUtils.h"
 #include "utils/collision/epa/EPAUtils.h"
+#include "utils/collision/aabb/utils/AABBUtils.h"
 
+#include "graphics/gl_objects/uniform/uniforms/basic/FloatUniform.h"
+#include "graphics/gl_objects/uniform/uniforms/basic/Vec3Uniform.h"
+#include "graphics/gl_objects/uniform/uniforms/basic/Vec2Uniform.h"
+#include "graphics/gl_objects/uniform/uniforms/basic/TextureUniform.h"
+#include "graphics/gl_objects/uniform/uniforms/TestUniform.h"
+#include "graphics/gl_objects/uniform/uniforms/ArrayUniform.h"
 
 using namespace std;
 
@@ -300,6 +307,27 @@ int main() {
 	cout << e.what() << endl;
     }
 
+    TestUniform test_uniform("val");
+
+    TestStruct val;
+
+    val.far = 5.0f;
+    val.position = glm::vec3(0, 0, 0);
+    val.color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    test_uniform.setValue(val);
+
+    ArrayUniform<glm::vec3> array_uniform(3, "colour");
+
+    array_uniform.set(0, make_shared<Vec3Uniform>(glm::vec3(1, 0, 0)));
+    array_uniform.set(1, make_shared<Vec3Uniform>(glm::vec3(0, 1, 0)));
+    array_uniform.set(2, make_shared<Vec3Uniform>(glm::vec3(0, 0, 1)));
+
+    //test_uniform.setPrefix("val");
+    //test_uniform.setSuffix("[1]");
+
+    cout << "fullname: " << test_uniform.getFullPath() << endl;
+
     shared_ptr<L> l = make_shared<L>();
     
     shared_ptr<gr::Window> window = make_shared<gr::Window>(500, 500, "OpenGL Project");
@@ -416,7 +444,7 @@ int main() {
     shared_ptr<Cube> cube = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     shared_ptr<Cube> cube2 = make_shared<Cube>(-0.5f, -0.5f, -0.5f, 1, 1, 1);
     cube->getModel()->setPosition(glm::vec3(2, 0, 2));//change cube position
-    //cube->getModel()->setRotation(glm::vec3(45, 45, 0));
+    cube->getModel()->setRotation(glm::vec3(45, 45, 0));
     //cube->getModel()->setScale(glm::vec3(1, 1, 0.5f));//change cube scale
     //cube->getModel()->setScale(glm::vec3(10, 10, 0.1f));//change cube scale
     //cube.setTexture(texture);
@@ -492,6 +520,15 @@ int main() {
 
     while(!glfwWindowShouldClose(window->getWindow())) {
         glUseProgram(program->getProgram());
+
+	array_uniform.updateLoc(program->getProgram());
+
+	array_uniform.uniform();
+
+	test_uniform.updateLoc(program->getProgram());
+
+	test_uniform.uniform();
+
 	theta ++;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -590,6 +627,7 @@ int main() {
 
 	//cout << "GJK COLLISION STATUS: " << gjk::collision(simplex, hitbox1, hitbox2, it) << " its: " << it << endl;
 	cout << "EPA COLLISION STATUS: " << result.status  << " depth: " << result.depth << " its: " << it << endl;
+	cout << "AABB COLLISION DETECT: " << aabb::collision(hitbox1.getAABB(), hitbox2.getAABB()) << endl;
 	cout << "p1: " << result.contact.p1.x << " " << result.contact.p1.y << " " << result.contact.p1.z << endl;
 	cout << "p1: " << result.contact.p2.x << " " << result.contact.p2.y << " " << result.contact.p2.z << endl;
 	cout << "p1: " << result.contact.p3.x << " " << result.contact.p3.y << " " << result.contact.p3.z << endl;

@@ -28,6 +28,14 @@ add_executable(${project_name}
 	src/graphics/gl_objects/texture/DepthTexture.cpp
 	src/graphics/gl_objects/texture/utils/TextureUtils.cpp
 
+	src/graphics/gl_objects/uniform/uniforms/TestUniform.cpp
+	src/graphics/gl_objects/uniform/uniforms/basic/FloatUniform.cpp
+	src/graphics/gl_objects/uniform/uniforms/basic/IntUniform.cpp
+	src/graphics/gl_objects/uniform/uniforms/basic/Vec3Uniform.cpp
+	src/graphics/gl_objects/uniform/uniforms/basic/Vec2Uniform.cpp
+	src/graphics/gl_objects/uniform/uniforms/basic/Mat4Uniform.cpp
+	src/graphics/gl_objects/uniform/uniforms/basic/TextureUniform.cpp
+
 	src/graphics/elements/window/Window.cpp
 
 	src/graphics/elements/window/callback/GLFWCallback.cpp

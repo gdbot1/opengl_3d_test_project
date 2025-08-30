@@ -19,3 +19,7 @@ glm::vec3 gjk::SphereHitbox::support(glm::vec3 direction) const {
 glm::vec3 gjk::SphereHitbox::getCenter() const {
     return glm::vec3(model_matrix->getMatrix() * glm::vec4(0, 0, 0, 1.0f));
 }
+
+aabb::AABB gjk::SphereHitbox::getAABB() const {
+    return aabb::AABB(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
+}

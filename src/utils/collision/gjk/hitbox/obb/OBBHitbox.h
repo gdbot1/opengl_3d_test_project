@@ -15,7 +15,7 @@
 
 namespace gjk {
 
-class OBBHitbox : public IHitbox {
+class OBBHitbox : public gjk::IHitbox {
 public:
     OBBHitbox(const std::vector<glm::vec3> vertices, std::shared_ptr<mtrx::TransformMatrix> model_matrix);
 
@@ -24,6 +24,8 @@ public:
     virtual glm::vec3 support(glm::vec3 direction) const override;
 
     virtual glm::vec3 getCenter() const override;
+
+    virtual aabb::AABB getAABB() const override;
 private:
     std::vector<glm::vec3> vertices;
     std::shared_ptr<mtrx::TransformMatrix> model_matrix;

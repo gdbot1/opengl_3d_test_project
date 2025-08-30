@@ -28,11 +28,11 @@ void tex::Texture::bindSampler(int sampler) {
 }
 
 void tex::Texture::bind() {
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(target, texture);
 }
 
 void tex::Texture::unbind() {
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(target, 0);
 }
 
 void tex::Texture::clone(tex::Texture &to) {

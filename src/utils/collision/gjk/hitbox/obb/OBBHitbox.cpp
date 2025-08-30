@@ -30,3 +30,21 @@ glm::vec3 gjk::OBBHitbox::support(glm::vec3 direction) const {
 glm::vec3 gjk::OBBHitbox::getCenter() const {
     return glm::vec3(model_matrix->getMatrix() * glm::vec4(0, 0, 0, 1.0f));
 }
+
+aabb::AABB gjk::OBBHitbox::getAABB() const {
+    glm::mat4 matrix = model_matrix->getMatrix();
+
+    glm::vec3 p0 = glm::vec3(matrix * glm::vec4(vertices[0], 1.0f));
+
+    glm::vec3 min = p0;
+    glm::vec3 max = p0;
+
+    for (int i = 1; i < vertices.size(); i++) {
+	glm::vec3 p = glm::vec3(matrix * glm::vec4(vertices[i], 1.0f));
+
+	min = glm::min(p, min);
+	max = glm::max(p, max);
+    }
+
+    return aabb::AABB(min, max - min);
+}
